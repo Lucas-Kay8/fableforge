@@ -1,0 +1,398 @@
+---
+name: fableforge
+description: FableForge 寓言铸造厂的核心 AI Agent SOP。专门用于制作高品质"寓言/管理洞察"类视频的 Skill。包含从概念生成、寓言创作、TTS 配音、到 HyperFrames 视频渲染的完整工业化 SOP，以及视觉风格指南与技术陷阱手册。
+---
+
+# 🔨 FableForge · 寓言铸造厂 AI Agent SOP
+
+本 Skill 是一份**命令级可执行 SOP**，而非经验教训集。每个 Stage 均包含**具体执行命令**和**退出验收标准**，严禁跳步或在退出标准未满足时进入下一阶段。
+
+---
+
+## 0. 剧本规格标准（强制约束）
+
+在开始任何生产之前，必须理解并遵守以下硬性规格。**所有偏离规格的剧本必须打回重写，不得进入生产阶段。**
+
+| 规格项 | 标准值 | 说明 |
+|--------|--------|------|
+| 总时长 | 60 ± 5 秒 | 适合短视频平台的黄金时长 |
+| 分镜数量 | 8 ～ 12 幕 | 过少节奏松散，过多切换过快 |
+| 每幕旁白字数 | 30 ～ 60 字 | 以约 3.5 字/秒的中文语速推算 |
+| 每幕预估时长 | 5 ～ 8 秒 | 最终以音频实测为准，此处仅为剧本阶段的草稿估算 |
+| 分镜编号格式 | `scene1` ～ `scene{N}` | 与 `assets/scene{N}.png` 严格一一对应 |
+| 旁白与分镜对应 | 1 幕 == 1 张图 == 1 段旁白 | 三者数量必须完全一致，不允许一幕多图或共享 |
+
+---
+
+## 0.5 质量门禁（三重内容验收）
+
+视频质量的上限由三个核心因素决定。**每一重门禁未通过，不得进入下一阶段。**
+
+### 门禁一：故事验收（概念生成后、停机确认前执行）
+
+AI 容易生成"结构正确但洞察平庸"的故事。在向用户展示寓言之前，必须完成以下自检：
+
+**选题标准（加入生成提示词中）：**
+> 选择的管理学概念必须同时满足：**听起来反直觉、说破后令人不适、在职场中普遍存在但极少被正视**。"努力就有回报"这类正能量概念不符合标准。
+
+**强制自检（全部通过方可提交用户确认）：**
+- [ ] **反常识测试**：这个洞察是"大家都知道"还是"大家都经历但从没被命名"的？前者没传播价值，重写。
+- [ ] **悬念测试**：用户在第 10 秒能否猜到结局？能猜到 = 隐喻太直白，必须加反转，重写。
+- [ ] **不适感测试**：结局是否让人感到轻微不舒服或醍醐灌顶？没有不适感就没有洞察深度，重写。
+- [ ] **现实锚定测试**：故事结尾的解释，是否映射到了用户**今天就可能遭遇**的具体职场场景？
+
+---
+
+### 门禁二：脚本节奏验收（剧本转化后执行）
+
+脚本是情绪的乐谱。全片节奏必须有弧线，禁止"一直是同一个情绪档位"的平铺。
+
+**情绪档位定义：**
+
+| 档位 | 名称 | 字数参考 | 用途 |
+|------|------|---------|------|
+| 1 | 舒缓叙事 | 40～60 字 | 开场建立世界观 |
+| 2 | 紧张蓄力 | 30～50 字 | 冲突展开阶段 |
+| 3 | 高潮爆发 | 20～40 字 | 关键转折点 |
+| 4 | 沉默留白 | ≤ 15 字 | 结论落地的停顿幕 |
+
+**强制节奏弧线（60 秒标准模板）：**
+```
+开场：1 → 1 → 2   （平稳建立，轻微升温）
+发展：2 → 2 → 3   （冲突升级，节奏加快）
+高潮：3 → 3 → 4   （最紧张，之后突然静止）
+结论：4 → 1        （留白后，用最少的字落地）
+```
+
+**脚本写作铁律：**
+- **写感受，不写动作**。旁白描述情绪状态，而不是画面动作：
+  - ❌ `"十只狼排成一列，在山谷中等待狼王的命令。"`
+  - ✅ `"山谷里没有声音。只有风，和等待者屏住的呼吸。"`
+- **结论幕字数减半**：最后一幕旁白不超过 20 字。越重要的道理，越要用更少的字。
+- **剧本格式补充档位字段**：每幕增加 `- **情绪档位**：{1/2/3/4}` 字段，作为图片提示词和语音语调的指导依据。
+
+---
+
+### 门禁三：图片质量验收（图片生成后、进入 Stage 2 前执行）
+
+**构图规范（每张图的提示词必须包含以下约束）：**
+- 主体人物必须在画面**上方 1/3** 区域，底部留给字幕区。
+- 提示词末尾统一加：`subject positioned in upper third of frame, dark atmospheric space at bottom`
+- 全片主光源方向统一（如统一为右侧逆光），保持跨幕视觉连贯。
+
+**风格锁定工作流：**
+```
+1. scene1 正常生成 → 确认风格满意后，将其提示词核心词组存为「风格前缀」
+2. scene2 ～ scene{N}：每个提示词开头追加风格前缀
+   格式："[首图核心风格], [光影描述], same art style, —"
+```
+
+**角色一致性（有固定角色的剧本必须执行）：**
+```
+1. 先生成一张「角色圣经」参考图（正面全身，无背景）
+2. 写明角色特征词组（毛色/体型/眼神/标志性特征）
+3. 每张含该角色的图，提示词必须包含此特征词组
+```
+
+**逐张自检：**
+- [ ] 主体在画面上 1/3，底部有足够深色安全区供字幕叠加
+- [ ] 图片情绪与该幕的「情绪档位」匹配（档位 3 的图不能是平静场景）
+- [ ] 全片光影/色调风格一致
+- [ ] 无明显 AI 瑕疵（多余手指、文字乱码、比例失调等）
+
+---
+
+## Stage 1：概念、剧本与物料生成
+
+### 1.1 概念生成（须停机等待用户确认）
+
+使用以下提示词模板生成寓言故事：
+
+> "请你从[指定领域]里，选择一个博士生水平的概念。然后写一个寓言故事，用间接的方式把这个概念讲清楚。不要一开始就说答案，尽量到故事快结束的时候，才让人意识到原来讲的是这个概念。故事结束后，再解释这个概念，以及故事里的隐喻分别对应什么。"
+
+**去重检查**：生成前扫描工作空间内所有 `YYYYMMDD/视频脚本.md`，确保主题不与历史作品重复。
+
+⛔ **此步完成后必须停机，将寓言故事完整展示给用户，等待明确确认。未经确认严禁继续。**
+
+### 1.2 剧本转化（用户确认后执行）
+
+将故事按规格标准拆解为分镜剧本，写入 `YYYYMMDD/视频脚本.md`。
+
+剧本格式模板：
+```markdown
+## 分镜 {N} — {幕名}
+- **时间（草稿估算）**：第 {X} ～ {Y} 秒
+- **旁白**：{30~60字的旁白文本}
+- **画面描述**：{图片提示词，中英文均可}
+```
+
+### 1.3 TTS 语音生成
+
+**语音节奏优化（生成前必须处理旁白文本）：**
+
+VoxCPM2 的情绪输出相对平稳，需要在文本层面手动注入戏剧感。处理规则：
+
+- 在核心关键词前插入 `……`，让模型自动降速放重音
+- 超过 130 字的段落用 `|||` 在语气转折处手动分段
+- 档位 4（沉默留白幕）的旁白每个词组之间都加 `……`
+
+```
+❌ 平铺直叙：
+"你以为选出了战将，其实你只选出了最擅长残杀队友的屠夫。"
+
+✅ 有停顿感的版本：
+"你以为……选出了战将。|||其实，你只筛选出了——最擅长残杀队友的……屠夫。"
+```
+
+在项目目录下执行：
+
+```bash
+# 使用本地 VoxCPM2 模型生成语音
+cd /Users/lucas/Work/09.Antigravity/语音模型
+# 编辑 generate.py 中的 TARGET_TEXT（含停顿标记的完整旁白）
+python generate.py
+# 复制到项目资产目录
+cp 02_克隆成品/*.wav /path/to/YYYYMMDD/assets/narration.wav
+```
+
+### 1.4 图片素材生成
+
+按剧本中每幕的"画面描述"逐一生成图片，命名严格遵循 `scene1.png`、`scene2.png` ... `scene{N}.png`，保存至 `YYYYMMDD/assets/`。
+
+**✅ Stage 1 退出标准（全部满足方可进入 Stage 2）：**
+```bash
+# 执行以下核查命令，输出应全部为绿色 OK
+ls YYYYMMDD/assets/ | grep -E "^scene[0-9]+\.png$" | wc -l  # 输出数量应 == 剧本分镜数
+ls YYYYMMDD/assets/narration.wav  # 文件必须存在
+```
+- [ ] `assets/` 下图片数量 == 剧本分镜数
+- [ ] `assets/narration.wav` 已生成
+- [ ] 图片命名连续（无跳号，如 scene1~scene10 不能跳过 scene7）
+
+---
+
+## Stage 2：音频解析与数据驱动时间轴
+
+### 2.1 获取音频精确时长
+
+```bash
+export PATH=./bin:$PATH
+ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 YYYYMMDD/assets/narration.wav
+# 记录输出的 duration=XX.XXXXXX，这是视频总时长的唯一权威数据
+```
+
+### 2.2 获取精确断句时间戳（二选一）
+
+**方案 A — Whisper 转录（推荐，精度最高）：**
+```bash
+npx hyperframes transcribe YYYYMMDD/assets/narration.wav
+# 生成 YYYYMMDD/assets/transcript.json，包含词级时间戳
+```
+
+**方案 B — 静音检测分割（音频停顿明显时使用）：**
+```bash
+export PATH=./bin:$PATH
+ffmpeg -i YYYYMMDD/assets/narration.wav -af silencedetect=noise=-30dB:duration=0.3 -f null - 2>&1 | grep silence
+# 记录每个 silence_end 时间点作为场景切换点
+```
+
+### 2.3 将时间戳映射到分镜
+
+根据 2.2 的输出，将每幕的 `data-start` 和 `data-duration` 精确填入剧本或直接生成为 JS 数组：
+
+```js
+// 由音频数据派生，禁止手动估算
+const scenes = [
+  { id: "scene1", start: 0,    duration: 5.8,  subtitle: "旁白文本..." },
+  { id: "scene2", start: 5.8,  duration: 6.2,  subtitle: "旁白文本..." },
+  // ...
+];
+```
+
+**✅ Stage 2 退出标准：**
+- [ ] `transcript.json` 已生成 或 `silencedetect` 输出已记录
+- [ ] 所有分镜的 `start + duration` 之和与音频总时长误差 < 0.2 秒
+- [ ] `data-start` 全部来自实测数据，无任何估算值
+
+---
+
+## Stage 3：静态排版构建与验收
+
+### 3.1 创建项目目录
+
+```bash
+mkdir -p YYYYMMDD/assets
+# 初始化 index.html（手动创建，参考下方 HTML 模板）
+```
+
+### 3.2 HTML 基础模板（强制规范）
+
+```html
+<!-- 根容器：三个 data-* 属性缺一不可 -->
+<div id="composition"
+     data-composition-id="composition"
+     data-width="1920"
+     data-height="1080">
+
+  <!-- 音频轨道 -->
+  <audio id="narration"
+         src="assets/narration.wav"
+         data-start="0"
+         data-duration="{音频总时长，来自 Stage 2.1}"
+         data-track-index="0">
+  </audio>
+
+  <!-- 场景由 JS 动态注入，禁止手动硬编码字幕 HTML -->
+  <div id="scenes-container"></div>
+</div>
+
+<script>
+  // GSAP 时间轴必须是 paused: true，永远不改
+  const tl = gsap.timeline({ paused: true });
+
+  // 提前注册，防止后续报错导致时间轴丢失
+  window.__timelines = window.__timelines || {};
+  window.__timelines["composition"] = tl;
+
+  // 从数据数组动态生成 DOM（防止特殊符号截断）
+  const scenes = [/* Stage 2.3 的数据数组 */];
+  const container = document.getElementById("scenes-container");
+
+  scenes.forEach(({ id, start, duration, subtitle }) => {
+    const div = document.createElement("div");
+    div.id = id;
+    div.className = "clip";
+    div.dataset.start = start;
+    div.dataset.duration = duration;
+    div.dataset.trackIndex = "1";
+    // 使用 textContent 写入字幕，从根本上杜绝特殊符号 HTML 注入问题
+    const sub = document.createElement("div");
+    sub.className = "subtitle";
+    sub.textContent = subtitle; // textContent 自动转义，永不出现 &lt; 问题
+    div.appendChild(sub);
+    container.appendChild(div);
+  });
+</script>
+```
+
+### 3.3 CSS 布局规范（强制）
+
+```css
+/* 前景图片：严禁使用 translate 居中，只允许此写法 */
+.fg-main {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* 禁止添加 position: absolute + translate(-50%,-50%) */
+}
+
+/* GSAP 做 Ken Burns 缩放时，transform-origin 必须明确 */
+.fg-main { transform-origin: center center; }
+```
+
+### 3.4 静态验收（加入动画前的检查）
+
+用浏览器打开 `index.html`，截图确认：
+- [ ] 每张图片完整显示，无裁切，无偏移
+- [ ] 图片在 1920×1080 的黑色背景内居中
+
+**✅ Stage 3 退出标准：**
+- [ ] 纯静态（无 GSAP 动画）下所有图片 100% 完整显示
+- [ ] `data-composition-id`、`data-width`、`data-height` 已正确设置
+- [ ] 字幕通过 `textContent` 注入，不存在硬编码的 HTML 字符串
+
+---
+
+## Stage 4：动画集成与预检发版
+
+### 4.1 加入 GSAP Ken Burns 动画
+
+在静态验收通过后，才可加入缓动动画：
+
+```js
+scenes.forEach(({ id, start, duration }) => {
+  const el = document.getElementById(id);
+  const img = el.querySelector(".fg-main");
+  tl.fromTo(img,
+    { scale: 1.0 },
+    { scale: 1.06, duration: duration, ease: "none" },
+    start
+  );
+});
+```
+
+### 4.2 强制预检（渲染前的最后防线）
+
+```bash
+export PATH=./bin:$PATH
+npx hyperframes@latest inspect YYYYMMDD/
+```
+
+**✅ Stage 4 退出标准（必须全部满足，才允许执行 render）：**
+- [ ] `inspect` 命令退出码为 0（无报错）
+- [ ] 控制台输出的 `totalDuration` 与 Stage 2.1 测量的音频时长误差 < 0.2 秒
+- [ ] 无任何 `StaticGuard` 警告
+
+### 4.3 渲染导出
+
+```bash
+export PATH=./bin:$PATH
+npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/final_video.mp4 --force-new
+```
+
+---
+
+## 附录 A：视觉风格指南
+
+### 风格决策原则
+
+- **动态适配**：视觉风格必须完全服务于故事。可选国风写意、现代极简、蒸汽朋克、赛博朋克或电影感实拍风格。
+- **自洽性**：全片所有图片的色调、光影和元素必须统一，严禁跨时空混搭（除非剧情要求）。
+
+### 图片提示词工程
+
+- **基调优先**：先定画风（`Cinematic realistic style` / `Oriental brush painting` / `Minimalist vector art`）。
+- **质量后缀**：每个提示词末尾统一加 `hyper-realistic details, cinematic lighting, masterpiece, 8K`。
+- **中文文字生成**（架构图/概念图专用）：`A [style] visualization with Chinese labels. Main node: "核心词". Sub-nodes: "关联词1", "关联词2". Professional design, glowing connections.`
+
+---
+
+## 附录 B：已知技术陷阱速查
+
+| 现象 | 根因 | 修复 |
+|------|------|------|
+| 图片裁切/偏移 | GSAP 矩阵覆盖了 `translate` 居中 | 改用 `object-fit: contain`，绝不用 `translate` |
+| 视频提前截断/少幕 | 字幕中含未转义的 `<` `>` 破坏 DOM | 改用 `textContent` 注入，程序生成永不出错 |
+| `inspect` 报错 / MP4 时长随机 | 违反渲染合约（改了 `paused: false` 或写了 `audio.play()`） | 时间轴永远 `paused: true`，不写任何 `play()` |
+| 画面色偏 | img 标签含 `filter: hue-rotate(...)` | 删除该 filter |
+| `FFmpeg not found` | 环境未配置 | `export PATH=./bin:$PATH`（bin 下放静态二进制） |
+
+---
+
+## 附录 C：环境配置（一次性）
+
+```bash
+# 下载 FFmpeg 静态二进制（Mac）
+curl -L https://evermeet.cx/ffmpeg/get/zip -o ffmpeg.zip && unzip ffmpeg.zip
+curl -L https://evermeet.cx/ffmpeg/get/ffprobe/zip -o ffprobe.zip && unzip ffprobe.zip
+mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
+
+# 语音生成路径
+# /Users/lucas/Work/09.Antigravity/语音模型
+```
+
+---
+
+## 附录 D：项目归档结构
+
+```text
+/YYYYMMDD/
+  ├── index.html          (核心时间轴，Stage 3/4 产物)
+  ├── assets/
+  │   ├── scene1.png      (场景图，数量 == 分镜数)
+  │   ├── scene{N}.png
+  │   ├── narration.wav   (TTS 配音，Stage 1.3 产物)
+  │   └── transcript.json (Whisper 时间戳，Stage 2.2 产物)
+  ├── 视频脚本.md          (剧本，Stage 1.2 产物)
+  └── final_video.mp4     (最终成品，Stage 4.3 产物)
+```

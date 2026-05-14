@@ -1,0 +1,124 @@
+"""
+AI 寓言视频流水线 — 语音克隆生成脚本
+基于 VoxCPM2 实现个人声纹克隆
+
+使用前必读：
+1. 准备好 15 秒的个人声音样本（WAV 格式）
+2. 修改下方 CONFIG 区域的三个参数
+3. 运行：source venv/bin/activate && python generate.py
+"""
+
+import os
+import numpy as np
+import soundfile as sf
+from voxcpm import VoxCPM
+
+# ================================================================
+# ⚙️  CONFIG 区域 — 每次使用只需修改这里
+# ================================================================
+
+# 你的声音样本路径（15 秒 WAV 文件）
+REFERENCE_WAV = "01_samples/my_voice.wav"
+
+# 你朗读声音样本时说的文字（必须与录音内容完全一致，模型用它对齐声纹）
+PROMPT_TEXT = "大家好，我在录制自己的声音样本。这段录音将作为我的声纹模板，帮助 AI 精确还原我的音色和情感。现在是[你的名字]，感谢收听。"
+
+# 你想让 AI 用你的声音朗读的目标文本（视频旁白）
+# 如果总字数超过 130 字，请在自然停顿处插入 ||| 分段标记
+# 示例："第一段旁白内容。|||第二段旁白内容。"
+TARGET_TEXT = """
+在这里粘贴你的完整视频旁白文本。
+超过 130 字时请用 ||| 在语气转折处手动分段。
+"""
+
+# 输出路径
+OUTPUT_FILE = "02_output/narration.wav"
+
+# ================================================================
+# 生成参数（已验证的最优组合，一般不需要修改）
+# ================================================================
+CFG_VALUE = 2.0           # 引导值：越高越像原声，但可能引入杂音，2.0 是黄金平衡点
+INFERENCE_STEPS = 40      # 推理步数：越高越精细但越慢，40 是速度/质量的最佳平衡
+SWEET_SPOT_CHARS = 130    # 模型甜区字数上限（超过此限制音质会下降）
+CROSSFADE_MS = 100        # 分段之间的交叉淡化时长（毫秒）
+
+
+def smart_split(text, sweet_spot=SWEET_SPOT_CHARS):
+    """智能分段：优先按手动标记 ||| 拆分，否则自动在中间句号处拆分"""
+    text = text.strip()
+    if "|||" in text:
+        parts = [p.strip() for p in text.split("|||") if p.strip()]
+        print(f"📝 检测到手动分段，拆分为 {len(parts)} 段")
+        return parts
+    if len(text) <= sweet_spot:
+        print(f"📝 文本 {len(text)} 字，在甜区内，不拆分")
+        return [text]
+    # 自动在文本中部附近寻找最佳句号拆分点
+    mid = len(text) // 2
+    search_start = int(len(text) * 0.35)
+    search_end = int(len(text) * 0.65)
+    best_pos, best_dist = None, float('inf')
+    for i in range(search_start, search_end):
+        if text[i] in '。？！.?!':
+            dist = abs(i - mid)
+            if dist < best_dist:
+                best_dist, best_pos = dist, i
+    if best_pos:
+        print(f"📝 自动在第 {best_pos} 字处拆分")
+        return [text[:best_pos + 1].strip(), text[best_pos + 1:].strip()]
+    return [text]
+
+
+def crossfade(seg1, seg2, sample_rate, ms=CROSSFADE_MS):
+    """在两段音频之间插入交叉淡化，消除拼接处的割裂感"""
+    overlap = int(sample_rate * ms / 1000)
+    if overlap > len(seg1) or overlap > len(seg2):
+        return np.concatenate([seg1, seg2])
+    fade_out = np.linspace(1.0, 0.0, overlap)
+    fade_in = np.linspace(0.0, 1.0, overlap)
+    mixed = seg1[-overlap:] * fade_out + seg2[:overlap] * fade_in
+    return np.concatenate([seg1[:-overlap], mixed, seg2[overlap:]])
+
+
+def generate():
+    print("🎙️  正在加载 VoxCPM2 模型（首次运行需下载约 4GB，请耐心等待）...")
+    vox = VoxCPM.from_pretrained("openbmb/VoxCPM2", load_denoiser=False)
+    model = vox.tts_model
+    sample_rate = model.sample_rate
+
+    print(f"🔍  正在分析声音样本：{REFERENCE_WAV}")
+    fixed_cache = model.build_prompt_cache(
+        reference_wav_path=REFERENCE_WAV,
+        trim_silence_vad=True
+    )
+
+    segments = smart_split(TARGET_TEXT)
+    wav_parts = []
+    for i, seg in enumerate(segments):
+        print(f"🎯  [{i + 1}/{len(segments)}] 生成第 {i + 1} 段语音...")
+        gen = model._generate_with_prompt_cache(
+            target_text=seg,
+            prompt_cache=fixed_cache,
+            cfg_value=CFG_VALUE,
+            inference_timesteps=INFERENCE_STEPS,
+            retry_badcase=True,
+            retry_badcase_max_times=3
+        )
+        wav_tensor, _, _ = next(gen)
+        wav_parts.append(wav_tensor.squeeze(0).cpu().numpy())
+
+    # 拼接所有段落
+    final_wav = wav_parts[0]
+    for part in wav_parts[1:]:
+        final_wav = crossfade(final_wav, part, sample_rate)
+
+    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+    sf.write(OUTPUT_FILE, final_wav, sample_rate)
+    print(f"✅  完成！文件已保存至：{OUTPUT_FILE}")
+    print(f"💡  提示：将此文件复制到你的视频项目 assets/narration.wav")
+
+
+if __name__ == "__main__":
+    # 离线模式：模型已下载后无需再联网
+    # os.environ["HF_HUB_OFFLINE"] = "1"  # 取消注释以强制离线运行
+    generate()

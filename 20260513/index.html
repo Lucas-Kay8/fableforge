@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+      #root { position: relative; width: 100%; height: 100%; }
+      .clip { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
+      .image-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: center center; will-change: transform; }
+      .subtitle-bar { position: absolute; bottom: 80px; left: 0; right: 0; display: flex; justify-content: center; align-items: flex-end; padding: 0 160px; }
+      .subtitle { display: none; padding: 22px 64px; background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 52px; border-radius: 14px; backdrop-filter: blur(10px); text-align: center; max-width: 1520px; line-height: 1.5; border: 1px solid rgba(255,255,255,0.18); }
+      .subtitle.active { display: inline-block; }
+      .title-card { display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(ellipse at center, #1e3a5f 0%, #000 70%); color: #e8c97a; text-align: center; }
+      .title-card h1 { font-size: 130px; font-weight: 700; letter-spacing: 14px; margin-bottom: 32px; text-shadow: 0 4px 24px rgba(0,0,0,0.6); }
+      .title-card p { font-size: 44px; opacity: 0.85; max-width: 1200px; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="165" data-width="1920" data-height="1080">
+      <!-- Audio Tracks (Precision Synced v3) -->
+      <audio id="audio-1" src="assets/audio/narration_1_v3.wav" data-start="4" data-duration="9.6" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-2" src="assets/audio/narration_2_v3.wav" data-start="13.6" data-duration="14.72" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-3" src="assets/audio/narration_3_v3.wav" data-start="28.32" data-duration="16.48" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-4" src="assets/audio/narration_4_v3.wav" data-start="44.8" data-duration="20.96" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-5" src="assets/audio/narration_5_v3.wav" data-start="65.76" data-duration="20.96" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-6" src="assets/audio/narration_6_v3.wav" data-start="86.72" data-duration="21.28" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-7" src="assets/audio/narration_7_v3.wav" data-start="108.0" data-duration="19.52" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-8" src="assets/audio/narration_8_v3.wav" data-start="127.52" data-duration="12.8" data-track-index="2" data-volume="1" preload="auto"></audio>
+      <audio id="audio-9" src="assets/audio/narration_9_v3.wav" data-start="140.32" data-duration="24.7" data-track-index="2" data-volume="1" preload="auto"></audio>
+
+      <!-- Scene 0: Title (0–4s) -->
+      <div id="scene-title" class="clip title-card" data-start="0" data-duration="4" data-track-index="0">
+        <h1>那座永远修不完的桥</h1>
+        <p>HR 系统不能局部最优，要服务组织整体流动</p>
+      </div>
+
+      <!-- Scene 1: Intro (4–13.6s) -->
+      <div id="s1" class="clip" data-start="4" data-duration="9.6" data-track-index="0">
+        <img src="assets/scene_0.png" class="image-bg" id="img-0" />
+        <div class="subtitle-bar">
+          <div id="sub-1" class="subtitle">很久以前，有一座城，叫青石城。</div>
+          <div id="sub-2" class="subtitle">这座城很富，也很忙。</div>
+        </div>
+      </div>
+
+      <!-- Scene 2: Decide (13.6–28.32s) -->
+      <div id="s2" class="clip" data-start="13.6" data-duration="14.72" data-track-index="0">
+        <img src="assets/scene_0.png" class="image-bg" id="img-1" style="filter: brightness(0.8);" />
+        <div class="subtitle-bar">
+          <div id="sub-3" class="subtitle">农夫送粮，铁匠送器具，商人送账本，每天都被渡船拖慢。</div>
+          <div id="sub-4" class="subtitle">城主下令：谁造桥最快、最省钱，谁就能得到金币。</div>
+        </div>
+      </div>
+
+      <!-- Scene 3: Success (28.32–44.8s) -->
+      <div id="s3" class="clip" data-start="28.32" data-duration="16.48" data-track-index="0">
+        <img src="assets/scene_2.png" class="image-bg" id="img-2" />
+        <div class="subtitle-bar">
+          <div id="sub-5" class="subtitle">三个月后，三座桥都建好了。</div>
+          <div id="sub-6" class="subtitle">城主以为，青石城终于顺了。</div>
+        </div>
+      </div>
+
+      <!-- Scene 4: Chaos (44.8–65.76s) -->
+      <div id="s4" class="clip" data-start="44.8" data-duration="20.96" data-track-index="0">
+        <img src="assets/scene_3.png" class="image-bg" id="img-3" />
+        <div class="subtitle-bar">
+          <div id="sub-7" class="subtitle">可没过多久，奇怪的事发生了。</div>
+          <div id="sub-8" class="subtitle">桥一座接一座地修，可整座城，却越来越乱。</div>
+        </div>
+      </div>
+
+      <!-- Scene 5: Surveyor (65.76–86.72s) -->
+      <div id="s5" class="clip" data-start="65.76" data-duration="20.96" data-track-index="0">
+        <img src="assets/scene_4.png" class="image-bg" id="img-4" />
+        <div class="subtitle-bar">
+          <div id="sub-9" class="subtitle">有一年，城里来了一个老测量师。</div>
+          <div id="sub-10" class="subtitle">老测量师说：“我看的不是桥。我看的是城。”</div>
+        </div>
+      </div>
+
+      <!-- Scene 6: Truth (86.72–108.0s) -->
+      <div id="s6" class="clip" data-start="86.72" data-duration="21.28" data-track-index="0">
+        <img src="assets/scene_4.png" class="image-bg" id="img-5"  />
+        <div class="subtitle-bar">
+          <div id="sub-11" class="subtitle">丰收季粮车堵街，战争期铁器挤桥。</div>
+          <div id="sub-12" class="subtitle">你以为在修桥，其实只是把问题推到了另一个地方。</div>
+        </div>
+      </div>
+
+      <!-- Scene 7: Reform (108.0–127.52s) -->
+      <div id="s7" class="clip" data-start="108.0" data-duration="19.52" data-track-index="0">
+        <img src="assets/scene_0.png" class="image-bg" id="img-6" style="filter: brightness(1.2);" />
+        <div class="subtitle-bar">
+          <div id="sub-13" class="subtitle">城主取消了“单桥奖励”，改为奖励“全城流动效率”。</div>
+        </div>
+      </div>
+
+      <!-- Scene 8: Ending (127.52–140.32s) -->
+      <div id="s8" class="clip" data-start="127.52" data-duration="12.8" data-track-index="0">
+        <img src="assets/scene_7.png" class="image-bg" id="img-7" />
+        <div class="subtitle-bar">
+          <div id="sub-14" class="subtitle">最好的桥，不是最结实的那一座。</div>
+          <div id="sub-15" class="subtitle">而是让整座城不再反复修桥的那一套安排。</div>
+        </div>
+      </div>
+
+      <!-- Scene 9: HR Metaphor (140.32–165.02s) -->
+      <div id="s9" class="clip" data-start="140.32" data-duration="24.7" data-track-index="0">
+        <img src="assets/final_org_chart.png" class="image-bg" id="img-8" />
+        <div class="subtitle-bar">
+          <div id="sub-16" class="subtitle">真正的战略型 HR，是设计组织的流动方式。</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      function show(id) { document.querySelectorAll(".subtitle").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
+      function hideAll() { document.querySelectorAll(".subtitle").forEach(s => s.classList.remove("active")); }
+
+      tl.from("#scene-title h1", { opacity: 0, y: 60, duration: 1.8 }, 0.4);
+      tl.from("#scene-title p",  { opacity: 0, y: 30, duration: 1.4 }, 1.2);
+
+      // S1: Intro
+      tl.fromTo("#img-0", { scale: 1.15 }, { scale: 1, duration: 9.6, ease: "sine.inOut" }, 4);
+      tl.call(() => show("sub-1"), [], 4.2);
+      tl.call(() => show("sub-2"), [], 8.0);
+      tl.call(hideAll, [], 13.5);
+
+      // S2: Decide
+      tl.fromTo("#img-1", { scale: 1 }, { scale: 1.1, duration: 14.72, ease: "sine.inOut" }, 13.6);
+      tl.call(() => show("sub-3"), [], 13.8);
+      tl.call(() => show("sub-4"), [], 21.0);
+      tl.call(hideAll, [], 28.2);
+
+      // S3: Success
+      tl.fromTo("#img-2", { scale: 1.15 }, { scale: 1, duration: 16.48, ease: "sine.inOut" }, 28.32);
+      tl.call(() => show("sub-5"), [], 28.5);
+      tl.call(() => show("sub-6"), [], 38.0);
+      tl.call(hideAll, [], 44.7);
+
+      // S4: Chaos
+      tl.fromTo("#img-3", { scale: 1, x: -30 }, { scale: 1.1, x: 30, duration: 20.96, ease: "sine.inOut" }, 44.8);
+      tl.call(() => show("sub-7"), [], 45.0);
+      tl.call(() => show("sub-8"), [], 53.0);
+      tl.call(hideAll, [], 65.6);
+
+      // S5: Surveyor
+      tl.fromTo("#img-4", { scale: 1.15, y: 30 }, { scale: 1, y: -30, duration: 20.96, ease: "sine.inOut" }, 65.76);
+      tl.call(() => show("sub-9"), [], 66.0);
+      tl.call(() => show("sub-10"), [], 75.0);
+      tl.call(hideAll, [], 86.6);
+
+      // S6: Truth
+      tl.fromTo("#img-5", { scale: 1, rotation: -1 }, { scale: 1.1, rotation: 1, duration: 21.28, ease: "sine.inOut" }, 86.72);
+      tl.call(() => show("sub-11"), [], 87.0);
+      tl.call(() => show("sub-12"), [], 96.0);
+      tl.call(hideAll, [], 107.8);
+
+      // S7: Reform
+      tl.fromTo("#img-6", { scale: 1.15 }, { scale: 1, duration: 19.52, ease: "sine.inOut" }, 108.0);
+      tl.call(() => show("sub-13"), [], 110.0);
+      tl.call(hideAll, [], 127.4);
+
+      // S8: Ending
+      tl.fromTo("#img-7", { scale: 1 }, { scale: 1.1, duration: 12.8, ease: "sine.inOut" }, 127.52);
+      tl.call(() => show("sub-14"), [], 128.0);
+      tl.call(() => show("sub-15"), [], 134.0);
+      tl.call(hideAll, [], 140.2);
+
+      // S9: HR Metaphor
+      tl.fromTo("#s9", { opacity: 0 }, { opacity: 1, duration: 1.5 }, 140.32);
+      tl.fromTo("#img-8", { scale: 1.15, filter: "brightness(0.5)" }, { scale: 1, filter: "brightness(1)", duration: 24.7, ease: "power2.out" }, 140.32);
+      tl.call(() => show("sub-16"), [], 142.0);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
