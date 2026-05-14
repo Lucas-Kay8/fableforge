@@ -74,7 +74,7 @@ python voice-model/generate.py
 #### Phase 2 — Configure the Project (once)
 
 ```bash
-git clone https://github.com/your-username/fableforge.git
+git clone https://github.com/Lucas-Kay8/fableforge.git
 cd fableforge
 
 # Install FFmpeg (required for rendering)
@@ -257,7 +257,7 @@ python voice-model/generate.py
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-username/fableforge.git
+git clone https://github.com/Lucas-Kay8/fableforge.git
 cd fableforge
 
 # 2. 安装 FFmpeg（视频渲染必须）
