@@ -169,6 +169,25 @@ ls YYYYMMDD/assets/narration.wav  # 文件必须存在
 - [ ] `assets/narration.wav` 已生成
 - [ ] 图片命名连续（无跳号，如 scene1~scene10 不能跳过 scene7）
 
+### 1.5 BGM 背景音乐匹配
+
+BGM 是情绪的推手，必须在 Stage 2 之前完成匹配。
+
+**BGM 匹配工作流：**
+1. **情绪识别**：分析剧本中各幕的「情绪档位」，提取核心关键词（如：Suspense, Epic, Minimalist, Melancholic）。
+2. **曲库搜索**：从免版税音乐库（如 Scott Buckley, Pixabay, Bensound）搜索并下载 1 首全局背景音。
+3. **参数配置**：
+   - `data-track-index`: 设为 `-1`（始终位于底层）。
+   - `data-volume`: 默认设为 `0.15` ～ `0.25`（通过 preview 实时调整，严禁盖过旁白）。
+4. **集成到 index.html**：
+   ```html
+   <audio id="bgm" src="assets/bgm.mp3" data-start="0" data-duration="{视频总长}" data-track-index="-1" data-volume="0.25"></audio>
+   ```
+
+**✅ Stage 1.5 退出标准：**
+- [ ] `assets/bgm.mp3` 已就位。
+- [ ] `视频脚本.md` 已补充 BGM 署名信息（含作者、链接及 CC 协议）。
+
 ---
 
 ## Stage 2：音频解析与数据驱动时间轴
@@ -392,6 +411,7 @@ mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
   │   ├── scene1.png      (场景图，数量 == 分镜数)
   │   ├── scene{N}.png
   │   ├── narration.wav   (TTS 配音，Stage 1.3 产物)
+  │   ├── bgm.mp3         (背景音乐，Stage 1.5 产物)
   │   └── transcript.json (Whisper 时间戳，Stage 2.2 产物)
   ├── 视频脚本.md          (剧本，Stage 1.2 产物)
   └── final_video.mp4     (最终成品，Stage 4.3 产物)

@@ -167,6 +167,25 @@ ls YYYYMMDD/assets/narration.wav                              # must exist
 - [ ] `assets/narration.wav` exists
 - [ ] Image filenames are sequential (no gaps, e.g., scene1–scene10 cannot skip scene7)
 
+### 1.5 BGM (Background Music) Matching
+
+BGM is the emotional engine and must be selected before entering Stage 2.
+
+**BGM Workflow:**
+1. **Mood Tagging**: Analyze the "Emotional Gear" of each scene to extract core keywords (e.g., Suspense, Epic, Minimalist, Melancholic).
+2. **Library Search**: Search royalty-free libraries (Scott Buckley, Pixabay, Bensound) and download 1 global background track.
+3. **Configuration**:
+   - `data-track-index`: Set to `-1` (always the bottom layer).
+   - `data-volume`: Default `0.15` to `0.25` (adjust via preview; must not drown narration).
+4. **Integration into index.html**:
+   ```html
+   <audio id="bgm" src="assets/bgm.mp3" data-start="0" data-duration="{total duration}" data-track-index="-1" data-volume="0.25"></audio>
+   ```
+
+**✅ Stage 1.5 Exit Criteria:**
+- [ ] `assets/bgm.mp3` is in place.
+- [ ] `script-template.md` (or `视频脚本.md`) includes BGM attribution (author, link, and CC license).
+
 ---
 
 ## Stage 2: Audio Analysis & Data-Driven Timeline
@@ -375,6 +394,7 @@ YYYYMMDD/
   │   ├── scene1.png      (scene images, count == scene count)
   │   ├── scene{N}.png
   │   ├── narration.wav   (TTS audio — Stage 1.3 output)
+  │   ├── bgm.mp3         (background music — Stage 1.5 output)
   │   └── transcript.json (Whisper timestamps — Stage 2.2 output)
   ├── script-template.md  (English storyboard — Stage 1.2 output)
   └── final_video.mp4     (finished film — Stage 4.3 output)

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>会自己变重的秤 — 坎蒂隆效应</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    #composition {
+      position: relative;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .clip {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      visibility: hidden; /* 由框架控制 */
+    }
+
+    .fg-main {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: center center;
+    }
+
+    .subtitle-container {
+      position: relative;
+      width: 80%;
+      padding-bottom: 80px; /* 预留底部深色区 */
+      z-index: 10;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 42px;
+      line-height: 1.5;
+      color: #fff;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px 30px;
+      border-radius: 8px;
+      display: inline-block;
+      letter-spacing: 2px;
+    }
+
+    /* 最后一幕特殊样式 */
+    #scene10 .subtitle {
+      font-size: 42px;
+      color: #ffd700; /* 金色强调结论 */
+      background: none;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+<div id="composition"
+     data-composition-id="cantillon_effect"
+     data-start="0"
+     data-width="1920"
+     data-height="1080"
+     data-duration="133.83">
+
+  <!-- 音频轨道 -->
+  <audio id="narration"
+         src="assets/narration.wav"
+         data-start="0"
+         data-duration="133.83"
+         data-track-index="0">
+  </audio>
+
+  <!-- 背景音乐：设置较低音量 0.25，避免盖过旁白 -->
+  <audio id="bgm"
+         src="assets/bgm.mp3"
+         data-start="0"
+         data-duration="133.83"
+         data-track-index="-1"
+         data-volume="0.25">
+  </audio>
+
+  <!-- 场景容器 -->
+  <div id="scenes-container"></div>
+</div>
+
+<script>
+  const tl = gsap.timeline({ paused: true });
+  window.__timelines = window.__timelines || {};
+  window.__timelines["cantillon_effect"] = tl;
+
+  const scenes = [
+    { id: "scene1", start: 0, duration: 11.23, subtitle: "很久以前，有一座临海的城，叫银湾城。这里最出名的不是海，而是一座市场。市场中心有一杆公共的大秤，主宰着所有的买卖。" },
+    { id: "scene2", start: 11.23, duration: 11.61, subtitle: "起初，秤很公平。一斤鱼就是一斤鱼，一袋麦就是一袋麦。大家虽然辛苦，但心里踏实。多打一网鱼，晚上就能多换一点面包。" },
+    { id: "scene3", start: 22.84, duration: 13.31, subtitle: "可是后来，新城主来了。他想修宫殿，想办宴会，却不想加税。他找到掌秤的工匠，悄悄下了一道命令：让秤的数字，看起来更大一点。" },
+    { id: "scene4", start: 36.15, duration: 15.17, subtitle: "第二天，秤变了。渔夫惊喜地发现，一筐鱼变成了一百一十斤。每个人都发现自己的货物变重了，口袋里的银币也变多了。" },
+    { id: "scene5", start: 51.32, duration: 9.79, subtitle: "银湾城一片欢腾。城主用这些凭空多出来的“重量”，换走了市场里的石头、酒肉和丝绸。宫殿一天比一天高，宴会一场接一场。" },
+    { id: "scene6", start: 61.11, duration: 15.03, subtitle: "渐渐地，事情变怪了。鱼卖得贵了，但面包也贵了；椅子卖得贵了，但木材也贵了。大家拿到的银币更多，钱却越来越不够用。" },
+    { id: "scene7", start: 76.14, duration: 13.43, subtitle: "百姓开始抱怨，城主却站在高台上指着账本说：看，所有数字都在增长，银湾城从未如此繁荣。可大家说不出哪里不对。" },
+    { id: "scene8", start: 89.57, duration: 12.29, subtitle: "直到有个孩子，拿家乡带来的石头放上秤。大秤说二十斤，古井边的旧秤却说只有十斤。老渔夫沉默了：原来，秤会骗人。" },
+    { id: "scene9", start: 101.86, duration: 15.03, subtitle: "这不是繁荣。这只是有人先摸到了秤的机关。最早拿到新数字的人，悄悄换走了真实的鱼和肉。" },
+    { id: "scene10", start: 116.89, duration: 16.94, subtitle: "坎蒂隆效应告诉我们：货币扩张会通过进入顺序，重新分配社会财富。这就是那杆“会自己变重的秤”最可怕的地方。它不是直接抢走你的鱼，它只是改变了……你衡量鱼的方式。" }
+  ];
+
+  const container = document.getElementById("scenes-container");
+
+  scenes.forEach(({ id, start, duration, subtitle }) => {
+    const sceneDiv = document.createElement("div");
+    sceneDiv.id = id;
+    sceneDiv.className = "clip";
+    sceneDiv.dataset.start = start;
+    sceneDiv.dataset.duration = duration;
+    sceneDiv.dataset.trackIndex = "1";
+
+    const img = document.createElement("img");
+    img.className = "fg-main";
+    img.src = `assets/${id}.png`;
+    sceneDiv.appendChild(img);
+
+    const subContainer = document.createElement("div");
+    subContainer.className = "subtitle-container";
+    const sub = document.createElement("div");
+    sub.className = "subtitle";
+    sub.textContent = subtitle;
+    subContainer.appendChild(sub);
+    sceneDiv.appendChild(subContainer);
+
+    container.appendChild(sceneDiv);
+
+    // Stage 4.1: 加入 GSAP Ken Burns 动画
+    tl.fromTo(img,
+      { scale: 1.0 },
+      { scale: 1.1, duration: duration, ease: "none" },
+      start
+    );
+
+    // 字幕淡入淡出 (可选，增强呼吸感)
+    tl.from(subContainer, { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" }, start + 0.3);
+  });
+</script>
+
+</body>
+</html>
