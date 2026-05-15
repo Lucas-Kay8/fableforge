@@ -30,6 +30,7 @@ FableForge is a fully automated video production pipeline that turns a managemen
 |-------|--------------------|----------|------|
 | *The Wolf King's Trial* | Zero-sum competition & the promotion trap | 60s | [Watch](./20260514/final_video.mp4) |
 | *The Endless Bridge* | Leadership extension & trust transfer | 60s | [Watch](./20260513/final_video.mp4) |
+| *The Scale That Gains Weight* | Cantillon Effect & wealth redistribution | 133s | [Watch](./20260515_Cantillon/promo_video.mp4) |
 
 > 📺 Drag `final_video.mp4` into a browser or media player to watch.
 
@@ -139,13 +140,14 @@ fableforge/
 └── package.json
 ```
 
-### 🧠 Core SOP: 4-Stage Industrial Pipeline
+### 🧠 Core SOP: 5-Stage Industrial Pipeline
 
 The heart of FableForge is a **command-level executable SOP** for AI Agents, stored in [`.agents/skills/fableforge/SKILL.en.md`](./.agents/skills/chinese-allegory-video-production/SKILL.en.md).
 
 | Stage | What Happens | Exit Criteria |
 |-------|-------------|---------------|
 | **Stage 1** Concept & Asset Generation | Write allegory, generate images, synthesize voice | Image count == scene count, audio file ready |
+| **Stage 1.5** BGM Matching | Mood analysis, track selection, auto-integration | BGM file ready, attribution added |
 | **Stage 2** Data-Driven Timeline | Whisper transcription, frame-accurate scene alignment | Deviation < 0.2s, zero estimated values |
 | **Stage 3** Static Layout Validation | Pure HTML/CSS, verify no image cropping before animation | All images display fully, DOM injected dynamically |
 | **Stage 4** Pre-flight & Render | inspect → render, machine validation replaces eyeballing | inspect exits 0, duration matches audio exactly |
@@ -326,15 +328,16 @@ npm run render  # 输出 final_video.mp4
 
 ---
 
-## 🧠 核心 SOP：四段式工业化流水线
+## 🧠 核心 SOP：五段式工业化流水线
 
 本项目的核心是一套写给 AI Agent 的**命令级可执行 SOP**，存放于 [`.agents/skills/chinese-allegory-video-production/SKILL.md`](./.agents/skills/chinese-allegory-video-production/SKILL.md)。
 
-它将整个生产过程切割为四个不可跳过的阶段，每个阶段都有**具体命令**和**退出验收标准**：
+它将整个生产过程切割为五个不可跳过的阶段，每个阶段都有**具体命令**和**退出验收标准**：
 
 | 阶段 | 做什么 | 退出标准 |
 |------|--------|---------|
 | **Stage 1** 概念与资产生成 | 创作寓言、生成图片、合成语音 | 图片数 == 分镜数，音频文件就位 |
+| **Stage 1.5** BGM 自动配乐 | 情绪识别、曲库匹配、自动下载集成 | BGM 就位，署名信息补充 |
 | **Stage 2** 数据驱动时间轴 | Whisper 转录，精确对齐每幕时间 | 误差 < 0.2 秒，无估算值 |
 | **Stage 3** 静态排版验收 | 纯静态 HTML/CSS，先验证图片不裁切 | 所有图片完整显示，DOM 动态注入 |
 | **Stage 4** 预检与渲染 | inspect → render，机器校验代替肉眼 | inspect 0 报错，时长精确匹配 |
