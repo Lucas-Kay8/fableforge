@@ -119,18 +119,58 @@ AI 容易生成"结构正确但洞察平庸"的故事。在向用户展示寓言
 - **提示词必加**：`cinematic vertical shot, 9:16 aspect ratio, subject positioned in upper third of frame, dark atmospheric space at bottom`
 - **全片一致性**：主光源方向统一，保持跨幕视觉连贯。
 
-**风格锁定工作流：**
-```
-1. scene1 正常生成 → 确认风格满意后，将其提示词核心词组存为「风格前缀」
-2. scene2 ～ scene{N}：每个提示词开头追加风格前缀
-   格式："[首图核心风格], [光影描述], same art style, —"
+**风格圣经工作流（强制）：**
+
+图片风格不一致的根因是：每个提示词都是独立的，AI 模型对「古代寺庙」的理解每次都不一样。解决方案是在生成任何图片之前，先编写一份**风格圣经**，作为所有提示词的**刚性前缀**。
+
+**步骤 1 — 编写风格圣经（写入 `视频脚本.md` 的「视觉风格」章节）：**
+
+必须定义以下 5 个维度，缺一不可：
+
+```markdown
+## 视觉风格（风格圣经）
+
+### 文化锚点
+- **时代与地域**：{如「唐代中国」「维多利亚英国」「赛博朋克东京」}
+- **建筑特征**：{如「斗拱、青瓦、木构梁柱」}
+- **服饰特征**：{如「圆领袍、交领汉服、明光铠甲」}
+- **道具/器物**：{如「青铜油灯、竹简、毛笔」}
+
+### 色调与光影
+- **主色调**：{如「墨色底蕴 + 暖金灯火」}
+- **光源方向**：{如「左侧 45° 暖光」}
+- **质感**：{如「微水墨纹理、宣纸颗粒感」}
+
+### 排除清单（负面提示）
+- {如「严禁出现日式元素：鸟居、和服、榻榻米、障子门」}
+- {如「严禁出现欧式元素：哥特尖拱、西式铠甲、石砌城堡」}
 ```
 
-**角色一致性（有固定角色的剧本必须执行）：**
+**步骤 2 — 组装提示词公式：**
+
+所有图片的提示词必须严格遵循以下模板：
+
 ```
-1. 先生成一张「角色圣经」参考图（正面全身，无背景）
-2. 写明角色特征词组（毛色/体型/眼神/标志性特征）
-3. 每张含该角色的图，提示词必须包含此特征词组
+[画幅指令], [文化锚点], [本幕画面描述], [色调光影], [质量后缀]. [排除清单].
+```
+
+示例：
+```
+Cinematic vertical shot, 9:16 aspect ratio. Ancient Chinese Tang Dynasty style.
+A young monk in grey round-collar robes holds a bronze oil lamp in a temple courtyard
+with Dougong bracket architecture and grey tile roofing.
+Ink-wash atmosphere, warm golden lamplight against dark shadows, subtle rice-paper texture.
+hyper-realistic details, cinematic lighting, 8K.
+No Japanese elements, no Western elements, no modern objects.
+```
+
+**步骤 3 — 角色一致性（有固定角色的剧本必须执行）：**
+
+```
+1. 为每个角色定义「角色特征词组」（5~10 个关键词）
+   示例：「年轻僧人，圆脸，剃度，灰色圆领直裰，草鞋，瘦弱身材」
+2. 将角色特征词组写入风格圣经
+3. 每张含该角色的图，提示词必须原样包含此特征词组
 ```
 
 **逐张自检：**
@@ -486,11 +526,23 @@ git push origin main
 
 - **动态适配**：视觉风格必须完全服务于故事。可选国风写意、现代极简、蒸汽朋克、赛博朋克或电影感实拍风格。
 - **自洽性**：全片所有图片的色调、光影和元素必须统一，严禁跨时空混搭（除非剧情要求）。
+- **文化锚点优先于美感**：当「好看」和「文化准确」冲突时，选文化准确。一张唐代故事里出现的日式庭院，再好看也是错误。
+
+### 常见文化锚点速查表
+
+| 文化设定 | 建筑关键词 | 服饰关键词 | 常见误导（必须排除） |
+|---------|-----------|-----------|-------------------|
+| 唐宋中国 | Dougong brackets, grey tiles, wooden beams, moon gate | Round-collar robe, Hanfu, Mingguang armor | 鸟居, 和服, 榻榻米, 哥特尖拱 |
+| 明清中国 | Upturned eaves, red lacquer columns, courtyard houses | Changshan, Qipao, Mandarin collar | 和服, 韩服, 维多利亚裙 |
+| 日本和风 | Torii gate, tatami, shoji screens, engawa | Kimono, hakama, geta sandals | 斗拱, 汉服, 旗袍 |
+| 中世纪欧洲 | Gothic arches, stone castle, stained glass | Chainmail, surcoat, leather boots | 东方建筑, 丝绸长袍 |
+| 赛博朋克 | Neon signs, holographic ads, megastructures | LED-trimmed jacket, visor, cybernetic limbs | 古典建筑, 自然光 |
 
 ### 图片提示词工程
 
-- **基调优先**：先定画风（`Cinematic realistic style` / `Oriental brush painting` / `Minimalist vector art`）。
-- **质量后缀**：每个提示词末尾统一加 `hyper-realistic details, cinematic lighting, masterpiece, 8K`。
+- **公式**：`[画幅指令] + [文化锚点] + [本幕内容] + [色调光影] + [质量后缀] + [排除清单]`
+- **质量后缀**：`hyper-realistic details, cinematic lighting, masterpiece, 8K`
+- **排除清单格式**：`No [culture A] elements, no [culture B] elements, no modern objects.`
 - **中文文字生成**（架构图/概念图专用）：`A [style] visualization with Chinese labels. Main node: "核心词". Sub-nodes: "关联词1", "关联词2". Professional design, glowing connections.`
 
 ---
