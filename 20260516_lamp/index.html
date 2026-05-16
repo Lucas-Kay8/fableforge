@@ -38,20 +38,19 @@
     window.__timelines = window.__timelines || {};
     window.__timelines["composition"] = tl;
 
-    // 绝对精确对齐：
-    // voice_start 来源于底层 silencedetect 分析。
-    // start = voice_start - 0.5s (给画面 0.5s 的淡入时间，确保语音响起时画面刚好 100% 呈现)
+    // 基于 ffmpeg RMS 能量波形分析的精确时间轴
+    // 每个 start 对齐到"前一个静默段结束后的首个语音帧"
     const scenes = [
-      { id: "scene_cover", start: 0, duration: 1.22, subtitle: "不会燃烧的灯" },
-      { id: "scene1", start: 1.22, duration: 19.93, subtitle: "山里有一座寺，寺里有一盏奇怪的灯。它不照亮整间屋子，只照亮脚前一小块地。小沙弥明远不懂：既然是最重要的灯，为什么不能亮一点？" },
-      { id: "scene2", start: 21.15, duration: 18.18, subtitle: "富商带着西域明珠赶来，他说：亮才有用。可当山中起雾，明珠的光把雾气照得一片惨白，白茫茫中，他反而看不清路了。" },
-      { id: "scene3", start: 39.33, duration: 14.80, subtitle: "明远重新提起旧灯。那点微光虽然只照脚前，却让他们一步步走出了迷雾。富商沉默了：原来光太强也会变成遮蔽。" },
-      { id: "scene4", start: 54.13, duration: 17.78, subtitle: "将军想在灯上刻下戒律，命令人心不得有贪嗔。可半夜里，他满头大汗地醒来：他发现越命令自己放下，那些仇恨和恐惧反而越响亮。" },
-      { id: "scene5", start: 71.91, duration: 12.75, subtitle: "灯只是静静亮着，没有审判，也没有命令。将军看着火苗忽然哭了：原来我一直在命令自己，假装没有仇恨。" },
-      { id: "scene6", start: 84.66, duration: 11.99, subtitle: "读书人拆开了灯，想寻找神迹。他发现油、芯、盏全都是寻常物，大失所望。可当他要下山走夜路时才惊觉：他研究了半天道理，却忘了借它看路。" },
-      { id: "scene7", start: 96.65, duration: 8.11, subtitle: "师父圆寂前说：明珠想照亮一切，连雾也照亮了；戒律想管住人心，连痛苦也压住了；解释想拆开真相，连用处也拆散了。" },
-      { id: "scene8", start: 104.76, duration: 3.34, subtitle: "这盏灯不替你看路，也不命令你。它只让你在这一刻，看见自己正站在哪里。" },
-      { id: "scene_end", start: 108.10, duration: 1.24, subtitle: "修行不是获得更亮的答案，而是培养一种不被答案遮蔽的看见。" }
+      { id: "scene_cover", start: 0, duration: 0.3, subtitle: "不会燃烧的灯" },
+      { id: "scene1", start: 0.3, duration: 19.8, subtitle: "山里有一座寺，寺里有一盏奇怪的灯。它不照亮整间屋子，只照亮脚前一小块地。小沙弥明远不懂：既然是最重要的灯，为什么不能亮一点？" },
+      { id: "scene2", start: 20.1, duration: 19.8, subtitle: "富商带着西域明珠赶来，他说：亮才有用。可当山中起雾，明珠的光把雾气照得一片惨白，白茫茫中，他反而看不清路了。" },
+      { id: "scene3", start: 39.9, duration: 12.3, subtitle: "明远重新提起旧灯。那点微光虽然只照脚前，却让他们一步步走出了迷雾。富商沉默了：原来光太强也会变成遮蔽。" },
+      { id: "scene4", start: 52.2, duration: 20.4, subtitle: "将军想在灯上刻下戒律，命令人心不得有贪嗔。可半夜里，他满头大汗地醒来：他发现越命令自己放下，那些仇恨和恐惧反而越响亮。" },
+      { id: "scene5", start: 72.6, duration: 11.1, subtitle: "灯只是静静亮着，没有审判，也没有命令。将军看着火苗忽然哭了：原来我一直在命令自己，假装没有仇恨。" },
+      { id: "scene6", start: 83.7, duration: 11.2, subtitle: "读书人拆开了灯，想寻找神迹。他发现油、芯、盏全都是寻常物，大失所望。可当他要下山走夜路时才惊觉：他研究了半天道理，却忘了借它看路。" },
+      { id: "scene7", start: 94.9, duration: 10.6, subtitle: "师父圆寂前说：明珠想照亮一切，连雾也照亮了；戒律想管住人心，连痛苦也压住了；解释想拆开真相，连用处也拆散了。" },
+      { id: "scene8", start: 105.5, duration: 1.4, subtitle: "这盏灯不替你看路，也不命令你。它只让你在这一刻，看见自己正站在哪里。" },
+      { id: "scene_end", start: 106.9, duration: 2.44, subtitle: "修行不是获得更亮的答案，而是培养一种不被答案遮蔽的看见。" }
     ];
 
     const container = document.getElementById("scenes-container");
