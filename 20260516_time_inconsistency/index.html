@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Time Inconsistency - Fogport Lighthouse</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --fg: #f0f0f4;
+      --accent: #eab308; /* Golden lighthouse light */
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+
+    #composition {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .clip {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .fg-main {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 2;
+    }
+
+    .bg-blur {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(40px) brightness(0.4);
+      z-index: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.85) 100%);
+      z-index: 2;
+    }
+
+    .subtitle-container {
+      position: relative;
+      z-index: 10;
+      width: 80%;
+      padding-bottom: 80px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 54px;
+      font-weight: 600;
+      line-height: 1.4;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      color: #fff;
+    }
+
+    /* Lighting effect for the lighthouse */
+    .glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 20%, rgba(234, 179, 8, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="composition" data-composition-id="main" data-width="1920" data-height="1080" data-duration="81.98">
+  <!-- Audio Tracks -->
+  <audio id="narration" src="assets/narration.wav" data-start="0" data-duration="81.98" data-track-index="0"></audio>
+  <audio id="bgm" src="assets/bgm.mp3" data-start="0" data-duration="81.98" data-track-index="-1" data-volume="0.2"></audio>
+
+  <!-- Scenes -->
+  <div id="scenes-container"></div>
+  
+  <!-- Global Glow -->
+  <div class="glow" id="global-glow"></div>
+</div>
+
+<script>
+  const scenes = [
+    { id: "scene1", start: 0, duration: 8.5, subtitle: "In the coastal city of Fogport, survival depended on one rule: the lighthouse must burn every evening, without fail." },
+    { id: "scene2", start: 8.5, duration: 9.3, subtitle: "For generations, the flame was a promise. Sailors didn't need to see the rocks; they only needed to see the light." },
+    { id: "scene3", start: 17.8, duration: 13.2, subtitle: "Then came a clever ruler. He looked at the ledgers and saw only costs. 'Why burn oil when the seas are calm?' he asked." },
+    { id: "scene4", start: 31.0, duration: 13.6, subtitle: "'If a ship appears, we'll light it then.' He decided to delay. The first night, nothing happened. He saved oil, and felt brilliant." },
+    { id: "scene5", start: 44.6, duration: 6.9, subtitle: "Soon, the light became unpredictable. Some nights it was late; some nights, it stayed dark. The ledger looked beautiful." },
+    { id: "scene6", start: 51.5, duration: 12.0, subtitle: "But the sailors noticed. 'Fogport is no longer reliable,' they whispered. One by one, the ships began to steer elsewhere." },
+    { id: "scene7", start: 63.5, duration: 6.7, subtitle: "The harbor grew silent. The ruler was confused: 'We only saved a little oil. Why has everyone vanished?'" },
+    { id: "scene8", start: 70.2, duration: 5.0, subtitle: "Because a promise is only valuable when people believe it. Once you start calculating its cost, it is no longer a promise." },
+    { id: "scene9", start: 75.2, duration: 4.7, subtitle: "This is Time Inconsistency: what's optimal to promise today, becomes the first thing you want to betray tomorrow." },
+    { id: "scene10", start: 79.9, duration: 2.08, subtitle: "In leadership and life, your credibility isn't built on what you say, but on what you refuse to recalculate." }
+  ];
+
+  const container = document.getElementById("scenes-container");
+  const tl = gsap.timeline({ paused: true });
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+
+  scenes.forEach((scene, index) => {
+    const div = document.createElement("div");
+    div.id = scene.id;
+    div.className = "clip";
+    div.dataset.start = scene.start;
+    div.dataset.duration = scene.duration;
+    div.dataset.trackIndex = "1";
+
+    const bg = document.createElement("img");
+    bg.src = `assets/scene${index + 1}.png`;
+    bg.className = "bg-blur";
+    div.appendChild(bg);
+
+    const img = document.createElement("img");
+    img.src = `assets/scene${index + 1}.png`;
+    img.className = "fg-main";
+    div.appendChild(img);
+
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    div.appendChild(overlay);
+
+    const subContainer = document.createElement("div");
+    subContainer.className = "subtitle-container";
+    const sub = document.createElement("div");
+    sub.className = "subtitle";
+    sub.textContent = scene.subtitle;
+    subContainer.appendChild(sub);
+    div.appendChild(subContainer);
+
+    container.appendChild(div);
+
+    // Animation: Ken Burns
+    tl.fromTo(img, 
+      { scale: 1.1, x: index % 2 === 0 ? -20 : 20 }, 
+      { scale: 1.0, x: 0, duration: scene.duration, ease: "none" }, 
+      scene.start
+    );
+
+    // Fade in/out (FableForge: no exit animation except final scene, but we use crossfades)
+    // Actually, HyperFrames handles visibility based on data-start/duration, 
+    // but we can add opacity tweens for smooth transitions.
+    tl.to(div, { opacity: 1, duration: 0.5 }, scene.start);
+    
+    if (index < scenes.length - 1) {
+        // Transition to next scene: Crossfade
+        tl.to(div, { opacity: 0, duration: 0.5 }, scene.start + scene.duration - 0.25);
+    } else {
+        // Final fade out
+        tl.to(div, { opacity: 0, duration: 1.0 }, scene.start + scene.duration - 1.0);
+    }
+  });
+
+  // Global Glow Pulses with the lighthouse light in scene 1, 2, 10
+  tl.to("#global-glow", { opacity: 0.4, repeat: 10, yoyo: true, duration: 2, ease: "sine.inOut" }, 0);
+</script>
+</body>
+</html>
