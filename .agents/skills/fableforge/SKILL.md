@@ -164,14 +164,24 @@ hyper-realistic details, cinematic lighting, 8K.
 No Japanese elements, no Western elements, no modern objects.
 ```
 
-**步骤 3 — 角色一致性（有固定角色的剧本必须执行）：**
+**步骤 3 — 角色锚定卡（有固定角色的剧本必须执行）：**
+
+角色面部一致性是 AI 图片生成的最大短板。仅靠文字描述无法保证同一角色在多张图中长得一样。必须建立**角色锚定卡**。
 
 ```
 1. 为每个角色定义「角色特征词组」（5~10 个关键词）
    示例：「年轻僧人，圆脸，剃度，灰色圆领直裰，草鞋，瘦弱身材」
 2. 将角色特征词组写入风格圣经
 3. 每张含该角色的图，提示词必须原样包含此特征词组
+4. 【进阶】首次生成主角图后，保存该图作为「参考锚图」
+   后续含同一角色的场景，使用 image-to-image 或
+   将锚图作为参考图传入 generate_image 的 ImagePaths 参数，
+   提示词追加："same character as reference, maintain facial features"
 ```
+
+> ⚠️ 角色锚图的效果取决于生图模型的 image-to-image 能力。
+> 当前 DALL-E 3 不支持参考图输入，此步骤暂为「提示词锚定」模式。
+> 未来切换到支持参考图的模型（如 Flux、SD3）后，可启用完整锚图工作流。
 
 **逐张自检：**
 - [ ] **封面图 (scene_cover)**：视觉冲击力极强，具备悬念感，能瞬间抓住注意力。
@@ -293,6 +303,15 @@ cp /Users/lucas/Work/09.Antigravity/语音模型/generate_cantillon.py \
 
 按剧本中每幕的"画面描述"逐一生成图片，命名严格遵循 `scene1.png`、`scene2.png` ... `scene{N}.png`，保存至 `YYYYMMDD/assets/`。
 
+**批量生成策略（应对 API 配额限流）：**
+
+图片生成 API 通常有速率限制（如每窗口期 5 张）。为避免流程阻塞，采用以下策略：
+
+1. **先批量准备提示词**：在生成前，将全部场景的提示词按风格圣经公式组装完毕，写入剧本。
+2. **分批生成 + 穿插其他工作**：每批生成到限流后，立即切换到其他 Stage 的工作（如音频分析、HTML 搭建），不要干等。
+3. **生成即归档**：每张图生成后立即 `cp` 到 `assets/` 目录并验证文件名，避免最后批量操作时遗漏。
+4. **断点续传**：用 `ls assets/scene*.png | wc -l` 检查进度，只生成缺失的图片。
+
 **✅ Stage 1 退出标准（全部满足方可进入 Stage 2）：**
 ```bash
 # 执行以下核查命令，输出应全部为绿色 OK
@@ -334,19 +353,39 @@ ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 YY
 # 记录输出的 duration=XX.XXXXXX，这是视频总时长的唯一权威数据
 ```
 
-### 2.2 获取精确断句时间戳（二选一）
+### 2.2 获取精确断句时间戳（三级方案，按精度递减选择）
 
-**方案 A — Whisper 转录（推荐，精度最高）：**
+**方案 A — Whisper 词级转录（精度最高，优先推荐）：**
 ```bash
 npx hyperframes transcribe YYYYMMDD/assets/narration.wav
 # 生成 YYYYMMDD/assets/transcript.json，包含词级时间戳
+# 直接按句末时间戳切分场景，误差 < 0.1s
 ```
 
-**方案 B — 静音检测分割（音频停顿明显时使用）：**
+**方案 B — RMS 能量分析 + 字数比例交叉验证（Whisper 不可用时）：**
 ```bash
 export PATH=./bin:$PATH
-ffmpeg -i YYYYMMDD/assets/narration.wav -af silencedetect=noise=-30dB:duration=0.3 -f null - 2>&1 | grep silence
-# 记录每个 silence_end 时间点作为场景切换点
+# 1. 提取 RMS 能量流
+ffmpeg -v error -i YYYYMMDD/assets/narration.wav \
+  -af astats=metadata=1:reset=1,ametadata=print:key=lavfi.astats.Overall.RMS_level:file=rms.txt \
+  -f null -
+
+# 2. 用 Python 脚本分析静默段（>= 0.85s 的低能量区间为段间分界）
+# 3. 将 RMS 检测到的分界与「字数比例推算」交叉验证：
+#    - 按各段旁白字数比例分配总时长，得出各段预估 start
+#    - 在预估 start ± 8s 范围内找最近的 RMS 静默段
+#    - 取静默段结束时间作为实际 scene start
+```
+
+> ⚠️ TTS 工具（如 VoxCPM2）的段间静默长度不稳定，句内停顿可能被误判为段间分界。
+> 交叉验证可有效过滤误判，但仍不如 Whisper 精确。
+
+**方案 C — 纯字数比例分配（兜底方案）：**
+```python
+# 当 RMS 分析不可靠时（如 TTS crossfade 过重），直接按字数分配
+# 误差 ±2s，对 10s+ 的场景可接受
+for scene in scenes:
+    scene.duration = scene.char_count / total_chars * total_audio_duration
 ```
 
 ### 2.3 将时间戳映射到分镜
@@ -363,9 +402,9 @@ const scenes = [
 ```
 
 **✅ Stage 2 退出标准：**
-- [ ] `transcript.json` 已生成 或 `silencedetect` 输出已记录
-- [ ] 所有分镜的 `start + duration` 之和与音频总时长误差 < 0.2 秒
-- [ ] `data-start` 全部来自实测数据，无任何估算值
+- [ ] Whisper `transcript.json` 已生成，或 RMS 分析 + 字数交叉验证已完成，或纯字数比例已计算
+- [ ] 所有分镜的 `start + duration` 之和与音频总时长误差 < 0.5 秒
+- [ ] 标注所使用的方案等级（A/B/C），方便后续迭代时升级
 
 ---
 
@@ -464,6 +503,19 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 | 字幕淡入 | `from(sub, {opacity:0, y:20, duration:0.8, ease:"power2.out"})` | 所有场景可选 |
 | 场景交叉淡化 | `to(div, {opacity:0, duration:0.5}, start+duration-0.25)` | 场景过渡 |
 | 光晕脉冲 | `to(glow, {opacity:0.4, repeat:-1, yoyo:true, duration:2})` | 火焰/光源场景 |
+
+### 4.1.1 情绪驱动转场匹配
+
+场景之间的转场不应千篇一律。根据**下一幕的情绪档位**选择对应转场：
+
+| 下一幕情绪档位 | 转场方式 | GSAP 代码 | 视觉效果 |
+|-------------|---------|----------|--------|
+| 1（舒缓叙事） | 慢溶解 | `fromTo(next, {opacity:0}, {opacity:1, duration:1.2, ease:"power1.inOut"})` | 平静过渡，如水墨晕染 |
+| 2（紧张蓄力） | 标准交叉淡化 | `fromTo(next, {opacity:0}, {opacity:1, duration:0.5, ease:"none"})` | 默认节奏 |
+| 3（高潮爆发） | 硬切 + 微缩放 | `tl.set(next, {opacity:1}); fromTo(next, {scale:1.05}, {scale:1.0, duration:0.3})` | 冲击感 |
+| 4（沉默留白） | 淡入黑 → 淡出黑 | `先 to(prev, {opacity:0, duration:0.8}), 延迟 0.5s, 再 fromTo(next, {opacity:0}, {opacity:1, duration:1.0})` | 呼吸感，给观众消化时间 |
+
+> 当前实现仍使用统一 0.5s 交叉淡化。在后续迭代中可按此表升级。
 
 ### 4.2 强制预检（渲染前的最后防线）
 
