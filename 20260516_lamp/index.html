@@ -10,21 +10,21 @@
        data-composition-id="composition"
        data-width="1080"
        data-height="1920"
-       data-duration="109.34">
+       data-duration="230.14">
 
     <div class="vignette"></div>
 
     <audio id="narration"
-           src="assets/narration.wav"
+           src="assets/narration_v2.wav"
            data-start="0"
-           data-duration="109.34"
+           data-duration="230.14"
            data-track-index="0">
     </audio>
 
     <audio id="bgm"
            src="assets/bgm.mp3"
            data-start="0"
-           data-duration="109.34"
+           data-duration="230.14"
            data-track-index="-1"
            data-volume="0.2">
     </audio>
@@ -38,19 +38,26 @@
     window.__timelines = window.__timelines || {};
     window.__timelines["composition"] = tl;
 
-    // 基于 ffmpeg RMS 能量波形分析的精确时间轴
-    // 每个 start 对齐到"前一个静默段结束后的首个语音帧"
+    // V2 完整叙事版：18 幕，时间轴按字数比例分配（总 230.14s）
     const scenes = [
-      { id: "scene_cover", start: 0, duration: 0.3, subtitle: "不会燃烧的灯" },
-      { id: "scene1", start: 0.3, duration: 19.8, subtitle: "山里有一座寺，寺里有一盏奇怪的灯。它不照亮整间屋子，只照亮脚前一小块地。小沙弥明远不懂：既然是最重要的灯，为什么不能亮一点？" },
-      { id: "scene2", start: 20.1, duration: 19.8, subtitle: "富商带着西域明珠赶来，他说：亮才有用。可当山中起雾，明珠的光把雾气照得一片惨白，白茫茫中，他反而看不清路了。" },
-      { id: "scene3", start: 39.9, duration: 12.3, subtitle: "明远重新提起旧灯。那点微光虽然只照脚前，却让他们一步步走出了迷雾。富商沉默了：原来光太强也会变成遮蔽。" },
-      { id: "scene4", start: 52.2, duration: 20.4, subtitle: "将军想在灯上刻下戒律，命令人心不得有贪嗔。可半夜里，他满头大汗地醒来：他发现越命令自己放下，那些仇恨和恐惧反而越响亮。" },
-      { id: "scene5", start: 72.6, duration: 11.1, subtitle: "灯只是静静亮着，没有审判，也没有命令。将军看着火苗忽然哭了：原来我一直在命令自己，假装没有仇恨。" },
-      { id: "scene6", start: 83.7, duration: 11.2, subtitle: "读书人拆开了灯，想寻找神迹。他发现油、芯、盏全都是寻常物，大失所望。可当他要下山走夜路时才惊觉：他研究了半天道理，却忘了借它看路。" },
-      { id: "scene7", start: 94.9, duration: 10.6, subtitle: "师父圆寂前说：明珠想照亮一切，连雾也照亮了；戒律想管住人心，连痛苦也压住了；解释想拆开真相，连用处也拆散了。" },
-      { id: "scene8", start: 105.5, duration: 1.4, subtitle: "这盏灯不替你看路，也不命令你。它只让你在这一刻，看见自己正站在哪里。" },
-      { id: "scene_end", start: 106.9, duration: 2.44, subtitle: "修行不是获得更亮的答案，而是培养一种不被答案遮蔽的看见。" }
+      { id: "scene_cover", start: 0.0, duration: 1.7, subtitle: "不会燃烧的灯" },
+      { id: "scene1", start: 1.7, duration: 15.2, subtitle: "山里有一座寺，寺里有一盏灯。这盏灯很怪——不管夜里风多大、雨多急，它都不会灭。它从来不照亮整间屋子，只照亮来人脚前的一小块地" },
+      { id: "scene2", start: 16.8, duration: 17.8, subtitle: "寺里有个小沙弥叫明远，每天负责添油、剪芯、擦灯盏。师父说这盏灯是寺里最重要的东西。明远不懂——既然最重要，为什么不做大一点" },
+      { id: "scene3", start: 34.6, duration: 14.7, subtitle: "有一天山下来了一个富商。他愿捐一千两银子，换黄金灯座配八面铜镜。明远很高兴，觉得寺终于要气派了" },
+      { id: "scene4", start: 49.3, duration: 13.2, subtitle: "师父却摇了头。富商不服：修行人不就是要破除黑暗吗？灯越亮不是功德越大？师父没回答，只让明远带富商住一晚" },
+      { id: "scene5", start: 62.5, duration: 16.1, subtitle: "那天夜里山中起了大雾。富商掏出明珠——方圆十丈全被照亮了。可雾气也被照亮了，白茫茫一片，他走了三步就被石头绊倒了" },
+      { id: "scene6", start: 78.6, duration: 16.6, subtitle: "明远收起明珠，提起旧灯。那点微光只照脚前三尺，可就是这三尺，让他们看清了每一块石头。他们一步一步走出了迷雾" },
+      { id: "scene7", start: 95.2, duration: 8.7, subtitle: "到了寺门口，富商站住了很久没说话。最后他轻声说：原来光太强也会变成遮蔽" },
+      { id: "scene8", start: 103.9, duration: 15.2, subtitle: "后来又来了一位将军。他带了刻刀想在灯座上刻下戒律——命令人心不得有贪嗔恐惧。他说只要时时看见戒律心就不会乱" },
+      { id: "scene9", start: 119.0, duration: 13.9, subtitle: "可半夜将军满头大汗地醒来。越命令自己放下仇恨，血和哭声反而越响亮。越说不准恐惧，身体就越颤抖" },
+      { id: "scene10", start: 133.0, duration: 13.7, subtitle: "他走到灯前，灯只是静静亮着。没有审判也没有命令。将军看着火苗忽然哭了——原来我一直在命令自己假装没有仇恨" },
+      { id: "scene11", start: 146.7, duration: 13.7, subtitle: "最后来了一个读书人。他不拜灯也不求灯——他把灯拆开了。想找到灯的秘密：特殊的油？罕见的灯芯？还是什么机关" },
+      { id: "scene12", start: 160.4, duration: 12.3, subtitle: "他研究了三天。油是普通菜油，芯是普通棉线，盏是普通青铜。什么都是寻常物，他大失所望准备下山" },
+      { id: "scene13", start: 172.7, duration: 11.1, subtitle: "可走到山门口天已经黑了。他一脚踩空差点摔下石阶——研究了三天道理，却忘了一件事：借它看路" },
+      { id: "scene14", start: 183.7, duration: 10.3, subtitle: "许多年后师父要圆寂了。明远跪在床前问：这盏灯到底有什么秘密？师父看着他笑了一下说——" },
+      { id: "scene15", start: 194.1, duration: 18.5, subtitle: "明珠想照亮一切连雾也照亮了。戒律想管住人心连痛苦也压住了。解释想拆开真相连用处也拆散了。所以读书人什么都懂了却忘了走路" },
+      { id: "scene16", start: 212.6, duration: 10.8, subtitle: "这盏灯不替你看路，也不命令你，也不解释自己。它只做一件事——让你在这一刻看见自己正站在哪里" },
+      { id: "scene_end", start: 223.4, duration: 6.7, subtitle: "修行不是获得更亮的答案，而是培养一种不被答案遮蔽的看见" }
     ];
 
     const container = document.getElementById("scenes-container");
@@ -61,8 +68,6 @@
       scene.dataset.start = start;
       scene.dataset.duration = duration;
       scene.dataset.trackIndex = "1";
-      
-      // 显式设置递增 z-index，确保后一幕物理上覆盖前一幕
       scene.style.zIndex = index + 1;
 
       const bgImg = document.createElement("img");
@@ -85,12 +90,10 @@
       scene.appendChild(overlay);
       container.appendChild(scene);
 
-      // --- 核心修复：严谨的可见性生命周期管理 ---
-      
-      // 1. 场景激活：瞬间设为可见，并确保 opacity 为 1
+      // 场景激活
       tl.set(scene, { autoAlpha: 1 }, start);
       
-      // 2. 场景进入动画：显式从 0 变到 1 (fromTo 解决 CSS 初始值冲突)
+      // 场景进入：fromTo 防止 CSS 初始值冲突
       if (index > 0) {
         tl.fromTo(scene, 
           { opacity: 0 }, 
@@ -98,26 +101,23 @@
           start
         );
       } else {
-        // 第一幕强制设为不透明
         tl.set(scene, { opacity: 1 }, start);
       }
 
-      // 3. Ken Burns 缩放动画
+      // Ken Burns 缩放
       tl.fromTo(fgImg,
         { scale: 1.0, transformOrigin: "center center" },
         { scale: 1.08, duration: duration, ease: "none" },
         start
       );
 
-      // 4. 字幕出现：比画面晚 0.3s 开始，在语音响起时正好处于动态升起的过程，营造完美的潜意识同步感
+      // 字幕出现
       tl.from(sub,
         { opacity: 0, y: 15, duration: 0.6, ease: "back.out(1.2)" },
         start + 0.3
       );
 
-      // 5. 场景清理：关键修复！
-      // 必须等下一幕的 0.5s 淡入动画执行完毕后，才能隐藏自己。
-      // 否则会出现下一幕还是半透明时，底板就空了的“闪黑”现象。
+      // 场景清理
       if (index < scenes.length - 1) {
         const nextStart = scenes[index + 1].start;
         tl.set(scene, { autoAlpha: 0 }, nextStart + 0.5);

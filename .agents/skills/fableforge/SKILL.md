@@ -505,18 +505,20 @@ npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/promo_video.mp4 --force-new
 
 在 `README.md` 的「演示作品」表格中追加新作品条目（中英文双语部分均需更新）。
 
-### 5.3 Git 同步
+### 5.3 Git 归档
+
+**仅 commit，不自动 push。** 推送时机由用户决定。
 
 ```bash
 git add YYYYMMDD/ README.md
 git commit -m "feat: Add {video_title} project"
-git push origin main
+# git push 由用户按需执行，不自动推送
 ```
 
 **✅ Stage 5 退出标准：**
 - [ ] `视频脚本.md` 包含完整元数据（声纹、时长、BGM、YouTube 链接）
 - [ ] `README.md` 中英双语演示作品表格已更新
-- [ ] `git push` 成功
+- [ ] `git commit` 成功
 
 ---
 
