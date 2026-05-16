@@ -76,9 +76,9 @@ AI 容易生成"结构正确但洞察平庸"的故事。在向用户展示寓言
 ### 门禁三：图片质量验收（图片生成后、进入 Stage 2 前执行）
 
 **构图与画幅规范（强制）：**
-- **画幅固定**：必须生成 **16:9 横版**图片（DALL-E 3 使用 `1792x1024`）。严禁使用正方形图片进入生产。
+- **画幅固定**：必须生成 **9:16 竖屏**图片（DALL-E 3 使用 `1024x1792`）。严禁使用横屏图片。
 - **主体位置**：主体人物/物件必须在画面**上方 1/3** 区域，底部留给字幕区。
-- **提示词必加**：`cinematic wide shot, 16:9 aspect ratio, subject positioned in upper third of frame, dark atmospheric space at bottom`
+- **提示词必加**：`cinematic vertical shot, 9:16 aspect ratio, subject positioned in upper third of frame, dark atmospheric space at bottom`
 - **全片一致性**：主光源方向统一，保持跨幕视觉连贯。
 
 **风格锁定工作流：**

@@ -7,8 +7,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  width: 1920px;
-  height: 1080px;
+  width: 1080px;
+  height: 1920px;
   overflow: hidden;
   background: #000;
   font-family: "Noto Serif SC", "Source Han Serif CN", serif;
@@ -17,8 +17,8 @@ body {
 /* 根容器撑满画布 */
 #composition {
   position: relative;
-  width: 1920px;
-  height: 1080px;
+  width: 1080px;
+  height: 1920px;
   overflow: hidden;
 }
 
