@@ -29,7 +29,8 @@ body {
 .clip {
   position: absolute;
   inset: 0;
-  display: none; /* HyperFrames 自动控制显示时机 */
+  opacity: 0; /* 改用透明度控制，避免 display: none 导致的渲染硬伤 */
+  display: block;
 }
 
 /* =========================================

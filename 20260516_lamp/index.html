@@ -81,22 +81,26 @@
       scene.appendChild(overlay);
       container.appendChild(scene);
 
-      // Ken Burns Effect
+      // --- 核心修复：显式控制显隐 ---
+      // 1. 在场景开始时瞬间显示 (autoAlpha 会同时处理 opacity 和 visibility)
+      tl.set(scene, { autoAlpha: 1 }, start);
+
+      // 2. Ken Burns 缩放动画
       tl.fromTo(fgImg,
         { scale: 1.0, transformOrigin: "center center" },
         { scale: 1.06, duration: duration, ease: "none" },
         start
       );
 
-      // Subtitle Fade In
+      // 3. 字幕淡入
       tl.from(sub,
         { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" },
-        start + 0.5
+        start + 0.4
       );
       
-      // Scene Transition (Crossfade)
-      if (start > 0) {
-        tl.from(scene, { opacity: 0, duration: 0.5 }, start);
+      // 4. 场景结束前淡出 (为了与下一幕交叉淡化)
+      if (start + duration < 109.34) {
+        tl.to(scene, { opacity: 0, duration: 0.5 }, start + duration - 0.25);
       }
     });
   </script>
