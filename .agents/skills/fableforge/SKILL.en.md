@@ -15,12 +15,12 @@ Before any production begins, understand and enforce these non-negotiable specs.
 
 | Spec | Standard | Notes |
 |------|----------|-------|
-| Total duration | 60 ± 5 seconds | Golden length for short-video platforms |
+| Total duration | 60 ~ 120 seconds | Short-form: 60s recommended; deep insights can extend to 120s |
 | Scene count | 8 ~ 12 scenes | Too few = loose pacing; too many = choppy cuts |
-| Words per scene narration | 30 ~ 60 words (EN) / characters (ZH) | Based on ~3.5 chars/sec Mandarin or ~2.5 words/sec English |
-| Scene duration estimate | 5 ~ 8 seconds | Final values come from audio measurement only |
+| Words per scene narration | ZH: 30~60 chars / EN: 20~40 words | ZH ~3.5 chars/sec, EN ~2.5 words/sec |
+| Scene duration estimate | 5 ~ 12 seconds | Final values come from audio measurement only |
 | Scene ID format | `scene1` ~ `scene{N}` | Must match `assets/scene{N}.png` exactly |
-| Narration-scene mapping | 1 scene == 1 image == 1 narration block | Strictly 1:1:1 — no sharing, no multi-image scenes |
+| Narration-scene mapping | 1 scene == 1 image == 1 narration block | Strictly 1:1:1 |
 
 ---
 
@@ -75,10 +75,11 @@ Resolution: 4 → 1       (after the pause, fewest words, biggest landing)
 
 ### Gate 3: Image Quality Review (after image generation, before Stage 2)
 
-**Composition Rules (every image prompt must include these constraints):**
-- Subject must be positioned in the **upper third** of the frame — the bottom is the subtitle safe zone.
-- Append to every prompt: `subject positioned in upper third of frame, dark atmospheric space at bottom for subtitles`
-- Unify the primary light direction across all scenes (e.g., right-side backlight throughout).
+**Composition & Aspect Ratio Rules (Mandatory):**
+- **Fixed Aspect Ratio**: Must generate **16:9 landscape** images (DALL-E 3: `1792x1024`). Square images are prohibited for production.
+- **Subject Position**: Subject must be positioned in the **upper third** of the frame — the bottom is the subtitle safe zone.
+- **Mandatory Keywords**: `cinematic wide shot, 16:9 aspect ratio, subject positioned in upper third of frame, dark atmospheric space at bottom`
+- **Coherence**: Unify the primary light direction across all scenes.
 
 **Style Locking Workflow:**
 ```
@@ -123,13 +124,17 @@ Storyboard format:
 ## Scene {N} — {Scene Name}
 - **Time (draft estimate)**: {X} ~ {Y} seconds
 - **Emotional Gear**: {1 / 2 / 3 / 4}
-- **Narration**: {30–60 word narration text}
-- **Visual Description**: {Image generation prompt — English preferred}
+- **Narration**: {ZH 30-60 chars / EN 20-40 words}
+- **Visual Description**: {Image generation prompt}
 ```
 
 ### 1.3 TTS Voice Generation
 
-**Voice pacing optimization (process narration text before generating):**
+**Voice Selection (Priority Awareness):**
+- **Default Principle**: Always check the `/语音模型/voxenv` environment first. If it exists, **MUST** use the user's voice clone for narration.
+- **Fallback**: Only use Kokoro or other generic models if explicitly requested or if the clone environment is unavailable.
+
+**Voice pacing optimization:**
 
 VoxCPM2's emotional output is relatively flat — inject dramatic texture at the text level:
 - Insert `…` before key nouns/verbs to slow the model down and add weight
@@ -147,11 +152,12 @@ VoxCPM2's emotional output is relatively flat — inject dramatic texture at the
 Run in the project directory:
 
 ```bash
-cd /Users/lucas/Work/09.Antigravity/语音模型
-# Edit generate.py → set TARGET_TEXT to full narration (with pause markers)
-python generate.py
-# Copy output to project
-cp 02_克隆成品/*.wav /path/to/YYYYMMDD/assets/narration.wav
+# Use VoxCPM2 with the virtual environment Python (one script per project)
+cp /Users/lucas/Work/09.Antigravity/语音模型/generate_cantillon.py \
+   /Users/lucas/Work/09.Antigravity/语音模型/generate_{project_name}.py
+# Edit TARGET_TEXT, OUTPUT_FILE variables
+/Users/lucas/Work/09.Antigravity/语音模型/voxenv/bin/python3 \
+  /Users/lucas/Work/09.Antigravity/语音模型/generate_{project_name}.py
 ```
 
 ### 1.4 Image Asset Generation
@@ -306,12 +312,31 @@ const scenes = [
 ### 3.2 CSS Layout Rules (mandatory)
 
 ```css
-/* Foreground image: NEVER use translate for centering — only this pattern */
+/* Container: 16:9 ratio */
+#composition { background: #000; overflow: hidden; }
+
+/* 1. Background layer: Blurred (for hierarchy or non-16:9 assets) */
+.bg-blur {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  object-fit: cover;
+  filter: blur(40px) brightness(0.4);
+  z-index: 1;
+}
+
+/* 2. Foreground layer: Main subject */
 .fg-main {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;       /* keeps aspect ratio, no cropping */
-  transform-origin: center center; /* GSAP scale anchor */
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  object-fit: contain; /* ensures no cropping */
+  z-index: 2;
+  transform-origin: center center;
+}
+
+/* 3. Subtitle layer */
+.subtitle {
+  position: relative;
+  z-index: 10;
 }
 ```
 
@@ -344,8 +369,42 @@ npx hyperframes@latest inspect YYYYMMDD/
 
 ```bash
 export PATH=./bin:$PATH
-npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/final_video.mp4 --force-new
+# Force use of promo_video.mp4 for automatic GitHub sync (exempted in .gitignore)
+npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/promo_video.mp4 --force-new
 ```
+
+---
+
+## Stage 5: Publishing & Archiving
+
+### 5.1 Script Metadata
+
+Update `视频脚本.md` / `script-template.md` with:
+
+```markdown
+## Technical Details
+- **Voice**: VoxCPM2 user clone / Kokoro am_adam
+- **Measured Duration**: {ffprobe value}s
+- **BGM**: {track name} by {author} (CC BY 4.0)
+- **YouTube**: {URL}
+```
+
+### 5.2 README Update
+
+Add a new row to the Demo Works table in `README.md` (both English and Chinese sections).
+
+### 5.3 Git Sync
+
+```bash
+git add YYYYMMDD/ README.md
+git commit -m "feat: Add {video_title} project"
+git push origin main
+```
+
+**✅ Stage 5 Exit Criteria:**
+- [ ] Script file contains full metadata (voice, duration, BGM, YouTube link)
+- [ ] `README.md` demo works table updated (both EN and ZH)
+- [ ] `git push` successful
 
 ---
 
@@ -367,10 +426,12 @@ npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/final_video.mp4 --force-new
 | Symptom | Root Cause | Fix |
 |---------|-----------|-----|
 | Image cropped / shifted | GSAP matrix overwrites `translate` centering | Use `object-fit: contain` — never `translate` |
-| Video ends early / missing last scene | Unescaped `<` or `>` in subtitle breaks DOM | Use `textContent` injection — never raw HTML strings |
-| `inspect` crashes / MP4 has random duration | Violated render contract (`paused: false` or `audio.play()`) | Timeline always `paused: true`, never write `play()` |
+| Square image top cropped | `object-fit: cover` clips subject | Force 16:9 generation, or use `contain` + blurred bg |
+| Video ends early / missing last scene | Unescaped `<` or `>` in subtitle breaks DOM | Use `textContent` injection |
+| `inspect` reports `totalDuration undefined` | Root container missing `data-duration` | Add `data-duration="{audio total}"` |
+| `inspect` crashes / MP4 has random duration | Violated render contract | Timeline always `paused: true`, never `play()` |
 | Color shift on screen | `img` tag has `filter: hue-rotate(...)` | Remove the filter |
-| `FFmpeg not found` | Environment not configured | `export PATH=./bin:$PATH` (put static binaries in `bin/`) |
+| `FFmpeg not found` | Environment not configured | `export PATH=./bin:$PATH` |
 
 ---
 
@@ -397,5 +458,5 @@ YYYYMMDD/
   │   ├── bgm.mp3         (background music — Stage 1.5 output)
   │   └── transcript.json (Whisper timestamps — Stage 2.2 output)
   ├── script-template.md  (English storyboard — Stage 1.2 output)
-  └── final_video.mp4     (finished film — Stage 4.3 output)
+  └── promo_video.mp4     (finished film — Stage 4.3 output, Git exemption list)
 ```

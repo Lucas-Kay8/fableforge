@@ -15,10 +15,10 @@ description: FableForge 寓言铸造厂的核心 AI Agent SOP。专门用于制�
 
 | 规格项 | 标准值 | 说明 |
 |--------|--------|------|
-| 总时长 | 60 ± 5 秒 | 适合短视频平台的黄金时长 |
+| 总时长 | 60 ～ 120 秒 | 短视频推荐 60s，深度洞察可延长至 120s |
 | 分镜数量 | 8 ～ 12 幕 | 过少节奏松散，过多切换过快 |
-| 每幕旁白字数 | 30 ～ 60 字 | 以约 3.5 字/秒的中文语速推算 |
-| 每幕预估时长 | 5 ～ 8 秒 | 最终以音频实测为准，此处仅为剧本阶段的草稿估算 |
+| 每幕旁白字数 | 中文 30～60 字 / 英文 20～40 词 | 中文约 3.5 字/秒，英文约 2.5 词/秒 |
+| 每幕预估时长 | 5 ～ 12 秒 | 最终以音频实测为准，此处仅为剧本阶段的草稿估算 |
 | 分镜编号格式 | `scene1` ～ `scene{N}` | 与 `assets/scene{N}.png` 严格一一对应 |
 | 旁白与分镜对应 | 1 幕 == 1 张图 == 1 段旁白 | 三者数量必须完全一致，不允许一幕多图或共享 |
 
@@ -75,10 +75,11 @@ AI 容易生成"结构正确但洞察平庸"的故事。在向用户展示寓言
 
 ### 门禁三：图片质量验收（图片生成后、进入 Stage 2 前执行）
 
-**构图规范（每张图的提示词必须包含以下约束）：**
-- 主体人物必须在画面**上方 1/3** 区域，底部留给字幕区。
-- 提示词末尾统一加：`subject positioned in upper third of frame, dark atmospheric space at bottom`
-- 全片主光源方向统一（如统一为右侧逆光），保持跨幕视觉连贯。
+**构图与画幅规范（强制）：**
+- **画幅固定**：必须生成 **16:9 横版**图片（DALL-E 3 使用 `1792x1024`）。严禁使用正方形图片进入生产。
+- **主体位置**：主体人物/物件必须在画面**上方 1/3** 区域，底部留给字幕区。
+- **提示词必加**：`cinematic wide shot, 16:9 aspect ratio, subject positioned in upper third of frame, dark atmospheric space at bottom`
+- **全片一致性**：主光源方向统一，保持跨幕视觉连贯。
 
 **风格锁定工作流：**
 ```
@@ -122,13 +123,18 @@ AI 容易生成"结构正确但洞察平庸"的故事。在向用户展示寓言
 ```markdown
 ## 分镜 {N} — {幕名}
 - **时间（草稿估算）**：第 {X} ～ {Y} 秒
-- **旁白**：{30~60字的旁白文本}
+- **情绪档位**：{1/2/3/4}
+- **旁白**：{中文30~60字 / 英文20~40词}
 - **画面描述**：{图片提示词，中英文均可}
 ```
 
 ### 1.3 TTS 语音生成
 
-**语音节奏优化（生成前必须处理旁白文本）：**
+**声纹选择（优先意识）：**
+- **默认原则**：优先检查 `/语音模型/voxenv` 环境。若存在，**必须**使用用户的声纹克隆生成旁白。
+- **降级方案**：仅在用户明确要求或克隆环境不可用时，才使用 Kokoro 等通用模型。
+
+**语音节奏优化：**
 
 VoxCPM2 的情绪输出相对平稳，需要在文本层面手动注入戏剧感。处理规则：
 
@@ -147,12 +153,14 @@ VoxCPM2 的情绪输出相对平稳，需要在文本层面手动注入戏剧感
 在项目目录下执行：
 
 ```bash
-# 使用本地 VoxCPM2 模型生成语音
-cd /Users/lucas/Work/09.Antigravity/语音模型
-# 编辑 generate.py 中的 TARGET_TEXT（含停顿标记的完整旁白）
-python generate.py
-# 复制到项目资产目录
-cp 02_克隆成品/*.wav /path/to/YYYYMMDD/assets/narration.wav
+# 使用本地 VoxCPM2 模型生成语音（必须使用虚拟环境的 Python）
+# 1. 复制并编辑生成脚本（每个项目独立一份）
+cp /Users/lucas/Work/09.Antigravity/语音模型/generate_cantillon.py \
+   /Users/lucas/Work/09.Antigravity/语音模型/generate_{project_name}.py
+# 2. 编辑 TARGET_TEXT、OUTPUT_FILE 等变量
+# 3. 运行
+/Users/lucas/Work/09.Antigravity/语音模型/voxenv/bin/python3 \
+  /Users/lucas/Work/09.Antigravity/语音模型/generate_{project_name}.py
 ```
 
 ### 1.4 图片素材生成
@@ -246,67 +254,62 @@ mkdir -p YYYYMMDD/assets
 
 ### 3.2 HTML 基础模板（强制规范）
 
+> ℹ️ 完整参考实现见 `template/index.html` 和 `template/style.css`。以下仅列出关键约束。
+
+**根容器必须包含 4 个 data-* 属性（缺一不可）：**
 ```html
-<!-- 根容器：三个 data-* 属性缺一不可 -->
 <div id="composition"
      data-composition-id="composition"
      data-width="1920"
-     data-height="1080">
-
-  <!-- 音频轨道 -->
-  <audio id="narration"
-         src="assets/narration.wav"
-         data-start="0"
-         data-duration="{音频总时长，来自 Stage 2.1}"
-         data-track-index="0">
-  </audio>
-
-  <!-- 场景由 JS 动态注入，禁止手动硬编码字幕 HTML -->
-  <div id="scenes-container"></div>
-</div>
-
-<script>
-  // GSAP 时间轴必须是 paused: true，永远不改
-  const tl = gsap.timeline({ paused: true });
-
-  // 提前注册，防止后续报错导致时间轴丢失
-  window.__timelines = window.__timelines || {};
-  window.__timelines["composition"] = tl;
-
-  // 从数据数组动态生成 DOM（防止特殊符号截断）
-  const scenes = [/* Stage 2.3 的数据数组 */];
-  const container = document.getElementById("scenes-container");
-
-  scenes.forEach(({ id, start, duration, subtitle }) => {
-    const div = document.createElement("div");
-    div.id = id;
-    div.className = "clip";
-    div.dataset.start = start;
-    div.dataset.duration = duration;
-    div.dataset.trackIndex = "1";
-    // 使用 textContent 写入字幕，从根本上杜绝特殊符号 HTML 注入问题
-    const sub = document.createElement("div");
-    sub.className = "subtitle";
-    sub.textContent = subtitle; // textContent 自动转义，永不出现 &lt; 问题
-    div.appendChild(sub);
-    container.appendChild(div);
-  });
-</script>
+     data-height="1080"
+     data-duration="{Stage 2.1 获取的音频总时长}">
 ```
+
+**场景 DOM 结构（由 JS 动态生成，严禁硬编码）：**
+```
+scene.clip
+  ├─ img.bg-fill    ← 背景模糊层（object-fit: cover + blur）
+  ├─ img.fg-main    ← 主体图片层
+  └─ div.overlay
+       └─ div.subtitle  ← 字幕（通过 textContent 写入）
+```
+
+**GSAP 铁律：**
+```js
+const tl = gsap.timeline({ paused: true }); // 永远 paused: true
+window.__timelines = window.__timelines || {};
+window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一致
+```
+
+**图片引用规范：**
+- 使用 `assets/${id}.png`（如 `assets/scene1.png`），与 scene 数据的 id 字段一致
 
 ### 3.3 CSS 布局规范（强制）
 
+> ℹ️ 完整实现见 `template/style.css`。以下仅列出核心规则。
+
+**`object-fit` 决策树（根据图片画幅选择）：**
+
+| 图片画幅 | fg-main | bg-fill | 效果 |
+|---------|---------|---------|------|
+| 16:9 横版（推荐） | `object-fit: cover` | 不需要 | 完美填充，无黑边 |
+| 非标画幅（正方形等） | `object-fit: contain` | 需要（blur + cover） | 毛玻璃背景填充黑边 |
+
 ```css
-/* 前景图片：严禁使用 translate 居中，只允许此写法 */
-.fg-main {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  /* 禁止添加 position: absolute + translate(-50%,-50%) */
+/* 背景模糊层（非 16:9 素材时使用） */
+.bg-fill {
+  position: absolute; inset: 0;
+  object-fit: cover;
+  filter: blur(20px) brightness(0.4);
+  transform: scale(1.1); /* 补偿 blur 边缘虚化 */
 }
 
-/* GSAP 做 Ken Burns 缩放时，transform-origin 必须明确 */
-.fg-main { transform-origin: center center; }
+/* 主体图片层：严禁使用 translate 居中 */
+.fg-main {
+  position: absolute; inset: 0;
+  object-fit: contain; /* 或 cover，见上方决策树 */
+  transform-origin: center center;
+}
 ```
 
 ### 3.4 静态验收（加入动画前的检查）
@@ -324,21 +327,17 @@ mkdir -p YYYYMMDD/assets
 
 ## Stage 4：动画集成与预检发版
 
-### 4.1 加入 GSAP Ken Burns 动画
+### 4.1 加入 GSAP 动画
 
-在静态验收通过后，才可加入缓动动画：
+在静态验收通过后，才可加入动效。可用动画菜单：
 
-```js
-scenes.forEach(({ id, start, duration }) => {
-  const el = document.getElementById(id);
-  const img = el.querySelector(".fg-main");
-  tl.fromTo(img,
-    { scale: 1.0 },
-    { scale: 1.06, duration: duration, ease: "none" },
-    start
-  );
-});
-```
+| 动效 | 代码模板 | 适用场景 |
+|------|---------|--------|
+| Ken Burns 缩放 | `fromTo(img, {scale:1.0}, {scale:1.06, ease:"none"})` | 所有场景默认 |
+| Ken Burns 平移 | `fromTo(img, {x:-20}, {x:0, ease:"none"})` | 宽场景横向扫描 |
+| 字幕淡入 | `from(sub, {opacity:0, y:20, duration:0.8, ease:"power2.out"})` | 所有场景可选 |
+| 场景交叉淡化 | `to(div, {opacity:0, duration:0.5}, start+duration-0.25)` | 场景过渡 |
+| 光晕脉冲 | `to(glow, {opacity:0.4, repeat:-1, yoyo:true, duration:2})` | 火焰/光源场景 |
 
 ### 4.2 强制预检（渲染前的最后防线）
 
@@ -356,8 +355,42 @@ npx hyperframes@latest inspect YYYYMMDD/
 
 ```bash
 export PATH=./bin:$PATH
-npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/final_video.mp4 --force-new
+# 强制使用 promo_video.mp4 以便自动同步到 GitHub (受 .gitignore 豁免)
+npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/promo_video.mp4 --force-new
 ```
+
+---
+
+## Stage 5：发布与归档
+
+### 5.1 视频脚本元数据补充
+
+在 `视频脚本.md` 中补充以下字段：
+
+```markdown
+## 技术参数
+- **声纹**：VoxCPM2 用户克隆 / Kokoro am_adam
+- **实测时长**：{ffprobe 实测值}s
+- **BGM**：{BGM 名称} by {BGM 作者} (CC BY 4.0)
+- **YouTube**：{URL}
+```
+
+### 5.2 README 更新
+
+在 `README.md` 的「演示作品」表格中追加新作品条目（中英文双语部分均需更新）。
+
+### 5.3 Git 同步
+
+```bash
+git add YYYYMMDD/ README.md
+git commit -m "feat: Add {video_title} project"
+git push origin main
+```
+
+**✅ Stage 5 退出标准：**
+- [ ] `视频脚本.md` 包含完整元数据（声纹、时长、BGM、YouTube 链接）
+- [ ] `README.md` 中英双语演示作品表格已更新
+- [ ] `git push` 成功
 
 ---
 
@@ -381,10 +414,12 @@ npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/final_video.mp4 --force-new
 | 现象 | 根因 | 修复 |
 |------|------|------|
 | 图片裁切/偏移 | GSAP 矩阵覆盖了 `translate` 居中 | 改用 `object-fit: contain`，绝不用 `translate` |
-| 视频提前截断/少幕 | 字幕中含未转义的 `<` `>` 破坏 DOM | 改用 `textContent` 注入，程序生成永不出错 |
-| `inspect` 报错 / MP4 时长随机 | 违反渲染合约（改了 `paused: false` 或写了 `audio.play()`） | 时间轴永远 `paused: true`，不写任何 `play()` |
+| 正方形图片顶部被裁 | `object-fit: cover` 裁切了主体 | 强制 16:9 生图，或改用 `contain` + 毛玻璃背景 |
+| 视频提前截断/少幕 | 字幕中含未转义的 `<` `>` 破坏 DOM | 改用 `textContent` 注入 |
+| `inspect` 报 `totalDuration undefined` | 根容器缺少 `data-duration` | 补上 `data-duration="{音频总长}"` |
+| `inspect` 报错 / MP4 时长随机 | 违反渲染合约 | 时间轴永远 `paused: true`，不写 `play()` |
 | 画面色偏 | img 标签含 `filter: hue-rotate(...)` | 删除该 filter |
-| `FFmpeg not found` | 环境未配置 | `export PATH=./bin:$PATH`（bin 下放静态二进制） |
+| `FFmpeg not found` | 环境未配置 | `export PATH=./bin:$PATH` |
 
 ---
 
@@ -414,5 +449,5 @@ mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
   │   ├── bgm.mp3         (背景音乐，Stage 1.5 产物)
   │   └── transcript.json (Whisper 时间戳，Stage 2.2 产物)
   ├── 视频脚本.md          (剧本，Stage 1.2 产物)
-  └── final_video.mp4     (最终成品，Stage 4.3 产物)
+  └── promo_video.mp4     (最终成品，Stage 4.3 产物，Git 豁免名单)
 ```
