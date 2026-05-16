@@ -31,6 +31,7 @@ FableForge is a fully automated video production pipeline that turns a managemen
 | *The Wolf King's Trial* | Zero-sum competition & the promotion trap | 60s | [Watch](./20260514/final_video.mp4) |
 | *The Endless Bridge* | Leadership extension & trust transfer | 60s | [Watch](./20260513/final_video.mp4) |
 | *The Scale That Gains Weight* | Cantillon Effect & wealth redistribution | 133s | [Watch](https://youtu.be/mSHp5E3-PDs) |
+| *The Lighthouse of Fogport* | Time Inconsistency & The cost of broken promises | 82s | [Watch](https://youtu.be/cAJq7VN0hs0) |
 
 > 📺 Drag `final_video.mp4` into a browser or media player to watch.
 
@@ -215,6 +216,7 @@ FableForge 是一个全自动视频生产管线，能将管理学概念转化为
 | 《狼王的审判》 | 零和博弈与晋升陷阱 | 60s | [观看](./20260514/final_video.mp4) |
 | 《无尽之桥》 | 领导力延伸与信任交付 | 60s | [观看](./20260513/final_video.mp4) |
 | 《会自己变重的秤》 | 坎蒂隆效应与财富再分配 | 133s | [观看](https://youtu.be/mSHp5E3-PDs) |
+| 《雾港城的灯塔》 | 时间不一致性与承诺的代价 | 82s | [观看](https://youtu.be/cAJq7VN0hs0) |
 
 > 📺 将 `final_video.mp4` 拖入浏览器或播放器即可观看。
 
