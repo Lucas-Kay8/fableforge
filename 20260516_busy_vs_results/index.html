@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>深渊里的擦镜人 — 勤奋的陷阱</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -33,7 +34,6 @@
 
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script>
     const tl = gsap.timeline({ paused: true });
     window.__timelines = window.__timelines || {};
@@ -80,19 +80,15 @@
       scene.appendChild(overlay);
       container.appendChild(scene);
 
-      // Ken Burns Effect
+      // Ken Burns Effect on Foreground Image
       tl.fromTo(fgImg,
-        { scale: 1.0, transformOrigin: "center center" },
-        { scale: 1.08, duration: duration, ease: "none" },
+        { scale: 1.0 },
+        { scale: 1.1, duration: duration, ease: "none" },
         start
       );
 
-      // Fade in/out scene transition
-      if (start > 0) {
-        tl.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, start);
-      } else {
-        tl.set(scene, { opacity: 1 });
-      }
+      // Subtitle breathe in
+      tl.from(overlay, { opacity: 0, y: 15, duration: 0.8, ease: "power2.out" }, start + 0.3);
     });
   </script>
 </body>

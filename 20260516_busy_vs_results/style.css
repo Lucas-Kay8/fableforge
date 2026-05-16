@@ -29,7 +29,7 @@ body {
 .clip {
   position: absolute;
   inset: 0;
-  display: none; /* HyperFrames 自动控制显示时机 */
+  visibility: hidden; /* 由 HyperFrames 渲染引擎自动控制显隐 */
 }
 
 /* =========================================
