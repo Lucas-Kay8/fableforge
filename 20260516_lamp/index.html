@@ -38,22 +38,22 @@
     window.__timelines = window.__timelines || {};
     window.__timelines["composition"] = tl;
 
-    // 由音频数据派生，精准对齐
+    // 经过“静音中点切分法”重校后的精确时间轴
     const scenes = [
-      { id: "scene_cover", start: 0, duration: 1.75, subtitle: "不会燃烧的灯" },
-      { id: "scene1", start: 1.75, duration: 19.9, subtitle: "山里有一座寺，寺里有一盏奇怪的灯。它不照亮整间屋子，只照亮脚前一小块地。小沙弥明远不懂：既然是最重要的灯，为什么不能亮一点？" },
-      { id: "scene2", start: 21.65, duration: 18.19, subtitle: "富商带着西域明珠赶来，他说：亮才有用。可当山中起雾，明珠的光把雾气照得一片惨白，白茫茫中，他反而看不清路了。" },
-      { id: "scene3", start: 39.84, duration: 14.79, subtitle: "明远重新提起旧灯。那点微光虽然只照脚前，却让他们一步步走出了迷雾。富商沉默了：原来光太强也会变成遮蔽。" },
-      { id: "scene4", start: 54.63, duration: 17.78, subtitle: "将军想在灯上刻下戒律，命令人心不得有贪嗔。可半夜里，他满头大汗地醒来：他发现越命令自己放下，那些仇恨和恐惧反而越响亮。" },
-      { id: "scene5", start: 72.41, duration: 12.75, subtitle: "灯只是静静亮着，没有审判，也没有命令。将军看着火苗忽然哭了：原来我一直在命令自己，假装没有仇恨。" },
-      { id: "scene6", start: 85.16, duration: 11.99, subtitle: "读书人拆开了灯，想寻找神迹。他发现油、芯、盏全都是寻常物，大失所望。可当他要下山走夜路时才惊觉：他研究了半天道理，却忘了借它看路。" },
-      { id: "scene7", start: 97.15, duration: 8.11, subtitle: "师父圆寂前说：明珠想照亮一切，连雾也照亮了；戒律想管住人心，连痛苦也压住了；解释想拆开真相，连用处也拆散了。" },
-      { id: "scene8", start: 105.26, duration: 3.34, subtitle: "这盏灯不替你看路，也不命令你。它只让你在这一刻，看见自己正站在哪里。" },
-      { id: "scene_end", start: 108.6, duration: 0.74, subtitle: "修行不是获得更亮的答案，而是培养一种不被答案遮蔽的看见。" }
+      { id: "scene_cover", start: 0, duration: 1.43, subtitle: "不会燃烧的灯" },
+      { id: "scene1", start: 1.43, duration: 19.84, subtitle: "山里有一座寺，寺里有一盏奇怪的灯。它不照亮整间屋子，只照亮脚前一小块地。小沙弥明远不懂：既然是最重要的灯，为什么不能亮一点？" },
+      { id: "scene2", start: 21.27, duration: 18.23, subtitle: "富商带着西域明珠赶来，他说：亮才有用。可当山中起雾，明珠的光把雾气照得一片惨白，白茫茫中，他反而看不清路了。" },
+      { id: "scene3", start: 39.50, duration: 14.86, subtitle: "明远重新提起旧灯。那点微光虽然只照脚前，却让他们一步步走出了迷雾。富商沉默了：原来光太强也会变成遮蔽。" },
+      { id: "scene4", start: 54.36, duration: 17.77, subtitle: "将军想在灯上刻下戒律，命令人心不得有贪嗔。可半夜里，他满头大汗地醒来：他发现越命令自己放下，那些仇恨和恐惧反而越响亮。" },
+      { id: "scene5", start: 72.13, duration: 12.72, subtitle: "灯只是静静亮着，没有审判，也没有命令。将军看着火苗忽然哭了：原来我一直在命令自己，假装没有仇恨。" },
+      { id: "scene6", start: 84.85, duration: 12.08, subtitle: "读书人拆开了灯，想寻找神迹。他发现油、芯、盏全都是寻常物，大失所望。可当他要下山走夜路时才惊觉：他研究了半天道理，却忘了借它看路。" },
+      { id: "scene7", start: 96.93, duration: 8.09, subtitle: "师父圆寂前说：明珠想照亮一切，连雾也照亮了；戒律想管住人心，连痛苦也压住了；解释想拆开真相，连用处也拆散了。" },
+      { id: "scene8", start: 105.02, duration: 3.30, subtitle: "这盏灯不替你看路，也不命令你。它只让你在这一刻，看见自己正站在哪里。" },
+      { id: "scene_end", start: 108.32, duration: 1.02, subtitle: "修行不是获得更亮的答案，而是培养一种不被答案遮蔽的看见。" }
     ];
 
     const container = document.getElementById("scenes-container");
-    scenes.forEach(({ id, start, duration, subtitle }) => {
+    scenes.forEach(({ id, start, duration, subtitle }, index) => {
       const scene = document.createElement("div");
       scene.id = id;
       scene.className = "clip";
@@ -81,27 +81,27 @@
       scene.appendChild(overlay);
       container.appendChild(scene);
 
-      // --- 核心修复：显式控制显隐 ---
-      // 1. 在场景开始时瞬间显示 (autoAlpha 会同时处理 opacity 和 visibility)
+      // --- 核心修复：显式控制显隐与同步 ---
+      // 1. 场景切换逻辑：瞬间激活可见性
       tl.set(scene, { autoAlpha: 1 }, start);
+      
+      // 2. 交叉淡化：除首幕外，每一幕进入时进行 0.5s 淡入
+      if (index > 0) {
+        tl.from(scene, { opacity: 0, duration: 0.5, ease: "power1.inOut" }, start);
+      }
 
-      // 2. Ken Burns 缩放动画
+      // 3. Ken Burns 缩放动画
       tl.fromTo(fgImg,
         { scale: 1.0, transformOrigin: "center center" },
-        { scale: 1.06, duration: duration, ease: "none" },
+        { scale: 1.08, duration: duration, ease: "none" },
         start
       );
 
-      // 3. 字幕淡入
+      // 4. 字幕出现：在画面切换后 0.3s 出现，与语音启动完美重合
       tl.from(sub,
-        { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" },
-        start + 0.4
+        { opacity: 0, y: 15, duration: 0.6, ease: "back.out(1.2)" },
+        start + 0.3
       );
-      
-      // 4. 场景结束前淡出 (为了与下一幕交叉淡化)
-      if (start + duration < 109.34) {
-        tl.to(scene, { opacity: 0, duration: 0.5 }, start + duration - 0.25);
-      }
     });
   </script>
 </body>
