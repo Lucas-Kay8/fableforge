@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>不会燃烧的灯</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="composition"
+       data-composition-id="composition"
+       data-width="1920"
+       data-height="1080"
+       data-duration="109.34">
+
+    <div class="vignette"></div>
+
+    <audio id="narration"
+           src="assets/narration.wav"
+           data-start="0"
+           data-duration="109.34"
+           data-track-index="0">
+    </audio>
+
+    <audio id="bgm"
+           src="assets/bgm.mp3"
+           data-start="0"
+           data-duration="109.34"
+           data-track-index="-1"
+           data-volume="0.2">
+    </audio>
+
+    <div id="scenes-container"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    window.__timelines = window.__timelines || {};
+    window.__timelines["composition"] = tl;
+
+    // 由音频数据派生，精准对齐
+    const scenes = [
+      { id: "scene_cover", start: 0, duration: 1.75, subtitle: "不会燃烧的灯。" },
+      { id: "scene1", start: 1.75, duration: 19.9, subtitle: "山里有一座寺……寺里有一盏奇怪的灯。它不照亮整间屋子，只照亮……脚前一小块地。小沙弥明远不懂：既然是最重要的灯，为什么不能亮一点？" },
+      { id: "scene2", start: 21.65, duration: 18.19, subtitle: "富商带着西域明珠赶来，他说：“亮才有用。” 可当山中起雾，明珠的光把雾气照得一片惨白，白茫茫中……他反而……看不清路了。" },
+      { id: "scene3", start: 39.84, duration: 14.79, subtitle: "明远重新提起旧灯。那点微光虽然只照脚前，却让他们一步……一步，走出了迷雾。富商沉默了：原来，光太强……也会变成遮蔽。" },
+      { id: "scene4", start: 54.63, duration: 17.78, subtitle: "将军想在灯上刻下戒律，命令人心……不得有贪嗔。可半夜里，他满头大汗地醒来：他发现越命令自己放下，那些仇恨和恐惧……反而越响亮。" },
+      { id: "scene5", start: 72.41, duration: 12.75, subtitle: "灯只是静静亮着，没有审判，也没有命令。将军看着火苗忽然哭了：“原来……我一直在命令自己，假装……没有仇恨。”" },
+      { id: "scene6", start: 85.16, duration: 11.99, subtitle: "读书人拆开了灯，想寻找神迹。他发现油、芯、盏全都是寻常物，大失所望。可当他要下山走夜路时才惊觉：他研究了半天道理，却忘了……借它看路。" },
+      { id: "scene7", start: 97.15, duration: 8.11, subtitle: "师父圆寂前说：明珠想照亮一切，连雾也照亮了；戒律想管住人心，连痛苦也压住了；解释想拆开真相，连用处也拆散了。" },
+      { id: "scene8", start: 105.26, duration: 3.34, subtitle: "这盏灯……不替你看路，也不命令你。它只让你在这一刻，看见自己……正站在哪里。" },
+      { id: "scene_end", start: 108.6, duration: 0.74, subtitle: "修行不是获得更亮的答案，而是培养一种——不被答案遮蔽的……看见。" }
+    ];
+
+    const container = document.getElementById("scenes-container");
+    scenes.forEach(({ id, start, duration, subtitle }) => {
+      const scene = document.createElement("div");
+      scene.id = id;
+      scene.className = "clip";
+      scene.dataset.start = start;
+      scene.dataset.duration = duration;
+      scene.dataset.trackIndex = "1";
+
+      const bgImg = document.createElement("img");
+      bgImg.className = "bg-fill";
+      bgImg.src = `assets/${id}.png`;
+
+      const fgImg = document.createElement("img");
+      fgImg.className = "fg-main";
+      fgImg.src = `assets/${id}.png`;
+
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+      const sub = document.createElement("div");
+      sub.className = "subtitle";
+      sub.textContent = subtitle;
+      overlay.appendChild(sub);
+
+      scene.appendChild(bgImg);
+      scene.appendChild(fgImg);
+      scene.appendChild(overlay);
+      container.appendChild(scene);
+
+      // Ken Burns Effect
+      tl.fromTo(fgImg,
+        { scale: 1.0, transformOrigin: "center center" },
+        { scale: 1.06, duration: duration, ease: "none" },
+        start
+      );
+
+      // Subtitle Fade In
+      tl.from(sub,
+        { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" },
+        start + 0.5
+      );
+      
+      // Scene Transition (Crossfade)
+      if (start > 0) {
+        tl.from(scene, { opacity: 0, duration: 0.5 }, start);
+      }
+    });
+  </script>
+</body>
+</html>

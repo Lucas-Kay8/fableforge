@@ -33,6 +33,7 @@ FableForge is a fully automated video production pipeline that turns a managemen
 | *The Scale That Gains Weight* | Cantillon Effect & wealth redistribution | 133s | [Watch](https://youtu.be/mSHp5E3-PDs) |
 | *The Lighthouse of Fogport* | Time Inconsistency & The cost of broken promises | 82s | [Watch](https://youtu.be/cAJq7VN0hs0) |
 | *The Mirror Polisher in the Abyss* | Diligent incompetence & Organizational entropy | 75s | [Watch](./20260516_busy_vs_results/promo_video.mp4) |
+| *The Lamp That Doesn't Burn* | Mindfulness & Right View | 109s | [Watch](./20260516_lamp/promo_video.mp4) |
 
 > 📺 Drag `final_video.mp4` into a browser or media player to watch.
 
@@ -219,6 +220,7 @@ FableForge 是一个全自动视频生产管线，能将管理学概念转化为
 | 《会自己变重的秤》 | 坎蒂隆效应与财富再分配 | 133s | [观看](https://youtu.be/mSHp5E3-PDs) |
 | 《雾港城的灯塔》 | 时间不一致性与承诺的代价 | 82s | [观看](https://youtu.be/cAJq7VN0hs0) |
 | 《深渊里的擦镜人》 | 低效勤奋与组织熵增 | 75s | [观看](./20260516_busy_vs_results/promo_video.mp4) |
+| 《不会燃烧的灯》 | 正念中的“如实知见”与“无分别智” | 109s | [观看](./20260516_lamp/promo_video.mp4) |
 
 > 📺 将 `final_video.mp4` 拖入浏览器或播放器即可观看。
 
