@@ -29,7 +29,8 @@ body {
 .clip {
   position: absolute;
   inset: 0;
-  display: none; /* HyperFrames 自动控制显示时机 */
+  opacity: 0; /* 默认逻辑隐藏，由渲染引擎或 GSAP 激活 */
+  display: block;
 }
 
 /* =========================================
