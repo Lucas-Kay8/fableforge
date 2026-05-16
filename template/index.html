@@ -97,7 +97,12 @@
       scene.appendChild(overlay);
       container.appendChild(scene);
 
-      // 注册 GSAP Ken Burns 缩放动画
+      // 注册 GSAP 动画
+      tl.set(scene, { autoAlpha: 1 }, start);
+      if (index > 0) {
+        tl.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "none" }, start);
+      }
+      
       tl.fromTo(fgImg,
         { scale: 1.0, transformOrigin: "center center" },
         { scale: 1.06, duration: duration, ease: "none" },

@@ -60,6 +60,9 @@
       scene.dataset.start = start;
       scene.dataset.duration = duration;
       scene.dataset.trackIndex = "1";
+      
+      // 显式设置递增 z-index，确保后一幕物理上覆盖前一幕
+      scene.style.zIndex = index + 1;
 
       const bgImg = document.createElement("img");
       bgImg.className = "bg-fill";
@@ -81,13 +84,21 @@
       scene.appendChild(overlay);
       container.appendChild(scene);
 
-      // --- 核心修复：显式控制显隐与同步 ---
-      // 1. 场景切换逻辑：瞬间激活可见性
+      // --- 核心修复：严谨的可见性生命周期管理 ---
+      
+      // 1. 场景激活：瞬间设为可见，并确保 opacity 为 1
       tl.set(scene, { autoAlpha: 1 }, start);
       
-      // 2. 交叉淡化：除首幕外，每一幕进入时进行 0.5s 淡入
+      // 2. 场景进入动画：显式从 0 变到 1 (fromTo 解决 CSS 初始值冲突)
       if (index > 0) {
-        tl.from(scene, { opacity: 0, duration: 0.5, ease: "power1.inOut" }, start);
+        tl.fromTo(scene, 
+          { opacity: 0 }, 
+          { opacity: 1, duration: 0.5, ease: "none" }, 
+          start
+        );
+      } else {
+        // 第一幕强制设为不透明
+        tl.set(scene, { opacity: 1 }, start);
       }
 
       // 3. Ken Burns 缩放动画
@@ -97,11 +108,18 @@
         start
       );
 
-      // 4. 字幕出现：在画面切换后 0.3s 出现，与语音启动完美重合
+      // 4. 字幕出现
       tl.from(sub,
         { opacity: 0, y: 15, duration: 0.6, ease: "back.out(1.2)" },
         start + 0.3
       );
+
+      // 5. 场景清理：在下一幕开始时或本幕结束时，彻底隐藏自己
+      // 这样可以释放渲染资源，并防止层级穿透
+      if (index < scenes.length - 1) {
+        const nextStart = scenes[index + 1].start;
+        tl.set(scene, { autoAlpha: 0 }, nextStart);
+      }
     });
   </script>
 </body>
