@@ -34,6 +34,7 @@ FableForge is a fully automated video production pipeline that turns a managemen
 | *The Lighthouse of Fogport* | Time Inconsistency & The cost of broken promises | 82s | [Watch](https://youtu.be/cAJq7VN0hs0) |
 | *The Mirror Polisher in the Abyss* | Diligent incompetence & Organizational entropy | 75s | [Watch](./20260516_busy_vs_results/promo_video.mp4) |
 | *The Lamp That Doesn't Burn* | Mindfulness & Right View | 109s | [Watch](./20260516_lamp/promo_video.mp4) |
+| *The Ferryman Crossing Others* | The attachment of being needed & Benevolent ego | 185s | [Watch](./20260517_ferryman/promo_video.mp4) |
 
 > 📺 Drag `final_video.mp4` into a browser or media player to watch.
 
@@ -221,6 +222,7 @@ FableForge 是一个全自动视频生产管线，能将管理学概念转化为
 | 《雾港城的灯塔》 | 时间不一致性与承诺的代价 | 82s | [观看](https://youtu.be/cAJq7VN0hs0) |
 | 《深渊里的擦镜人》 | 低效勤奋与组织熵增 | 75s | [观看](./20260516_busy_vs_results/promo_video.mp4) |
 | 《不会燃烧的灯》 | 正念中的“如实知见”与“无分别智” | 109s | [观看](./20260516_lamp/promo_video.mp4) |
+| 《替人过河的船夫》 | 离不开“被需要”与善的我执 | 185s | [观看](./20260517_ferryman/promo_video.mp4) |
 
 > 📺 将 `final_video.mp4` 拖入浏览器或播放器即可观看。
 
