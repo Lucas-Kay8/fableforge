@@ -41,24 +41,24 @@
 
     // V2 完整叙事版：18 幕，时间轴按字数比例分配（总 184.7s）
     const scenes = [
-      { id: "scene_cover", start: 0.0, duration: 4.8, emotion: 1, subtitle: "你以为你在帮人，其实可能只是离不开……“被需要”。" },
-      { id: "scene1", start: 4.8, duration: 11.2, emotion: 1, subtitle: "有一种善良，表面上是无私，深处却藏着一个……很难看见的自己。这个故事，讲的不是坏人。恰恰讲的是一个好人。" },
+      { id: "scene_cover", start: 0.0, duration: 4.8, emotion: 1, subtitle: "你以为你在帮人，其实可能只是离不开“被需要”。" },
+      { id: "scene1", start: 4.8, duration: 11.2, emotion: 1, subtitle: "有一种善良，表面上是无私，深处却藏着一个很难看见的自己。这个故事，讲的不是坏人。恰恰讲的是一个好人。" },
       { id: "scene2", start: 16.0, duration: 6.9, emotion: 1, subtitle: "山下有条河，河不宽，但水很急。很多人不敢过河，只能等一个老船夫。" },
       { id: "scene3", start: 22.9, duration: 7.4, emotion: 1, subtitle: "老船夫从不收钱。有人问他：“你图什么？”他说：“看见别人过不去，就想送一程。”" },
-      { id: "scene4", start: 30.3, duration: 9.4, emotion: 1, subtitle: "村里人都说他慈悲，说他功功德无量，说幸好有他。慢慢地，船夫也开始相信：这条河，离不开自己。" },
+      { id: "scene4", start: 30.3, duration: 9.4, emotion: 1, subtitle: "村里人都说他慈悲，说他功德无量，说幸好有他。慢慢地，船夫也开始相信：这条河，离不开自己。" },
       { id: "scene5", start: 39.7, duration: 8.4, emotion: 2, subtitle: "有一天，村里来了一个木匠。木匠说：“我可以造一座桥。桥造好了，大家就不用等船了。”" },
-      { id: "scene6", start: 48.1, duration: 3.6, emotion: 2, subtitle: "所有人都很高兴。只有船夫……沉默了。" },
+      { id: "scene6", start: 48.1, duration: 3.6, emotion: 2, subtitle: "所有人都很高兴。只有船夫沉默了。" },
       { id: "scene7", start: 51.7, duration: 6.1, emotion: 3, subtitle: "晚上，他找到木匠，说：“河水这么急，桥不安全。人掉下去，谁负责？”" },
       { id: "scene8", start: 57.8, duration: 9.2, emotion: 2, subtitle: "木匠说：“可桥造好了，大家就能自己过河了。”船夫脸色变了。他说：“你是说，我这些年都白送了？”" },
-      { id: "scene9", start: 67.0, duration: 10.2, emotion: 2, subtitle: "船夫又说：“他们坐我的船，我知道谁怕水，谁脚不好，谁赶时间。桥……懂这些吗？”听起来很有道理，也很温暖。" },
-      { id: "scene10", start: 77.2, duration: 18.3, emotion: 3, subtitle: "可问题是——如果他真的只是想让大家过河，他应该欢迎那座桥。因为桥能让更多人，不再依赖他。但他害怕的，可能不是桥不安全。而是桥一旦安全了，他就不再是那个……不可替代的人。" },
+      { id: "scene9", start: 67.0, duration: 10.2, emotion: 2, subtitle: "船夫又说：“他们坐我的船，我知道谁怕水，谁脚不好，谁赶时间。桥懂这些吗？”听起来很有道理，也很温暖。" },
+      { id: "scene10", start: 77.2, duration: 18.3, emotion: 3, subtitle: "可问题是——如果他真的只是想让大家过河，他应该欢迎那座桥。因为桥能让更多人，不再依赖他。但他害怕的，可能不是桥不安全。而是桥一旦安全了，他就不再是那个不可替代的人。" },
       { id: "scene11", start: 95.5, duration: 8.7, emotion: 1, subtitle: "后来，船夫病倒了。门外还有人在喊：“老伯，今天还能送我们过河吗？”船夫挣扎着要起身。" },
       { id: "scene12", start: 104.2, duration: 8.9, emotion: 3, subtitle: "一个年轻僧人拦住他，问了一句话：“你怕他们失望，还是怕他们不再需要你？”船夫愣住了。" },
-      { id: "scene13", start: 113.1, duration: 7.1, emotion: 4, subtitle: "僧人又问：“你是在送他们过河，还是在守着一个……‘他们离不开我’的自己？”" },
+      { id: "scene13", start: 113.1, duration: 7.1, emotion: 4, subtitle: "僧人又问：“你是在送他们过河，还是在守着一个‘他们离不开我’的自己？”" },
       { id: "scene14", start: 120.2, duration: 10.4, emotion: 2, subtitle: "那天，僧人没有让船夫下床。他走到河边，对排队的人说：“今天无船。谁愿意一起把桥造起来？”起初没人动。" },
       { id: "scene15", start: 130.6, duration: 17.1, emotion: 3, subtitle: "后来，一个人搬来木头，一个人拿来绳子，一个人踩进泥里。黄昏前，一座简陋的小桥架起来了。它不好看，也不宽。但人们第一次发现：原来过河，不一定非要等一个人来救。" },
       { id: "scene16", start: 147.7, duration: 15.3, emotion: 1, subtitle: "孩子走到对岸，回头喊：“老伯，我过去啦！”船夫哭了。不是因为感动。而是他终于看见：自己一直以为放不下众生，其实放不下的，是那个“正在度众生的自己”。" },
-      { id: "scene_end", start: 163.0, duration: 21.7, emotion: 4, subtitle: "这就是佛学里很深的一个概念：善里的我执。人不仅会执着于利益，也会执着于“我是好人”。不仅会贪图被赞美，也会贪图……被需要。真正的慈悲，不是让别人离不开你。而是连“我是慈悲的人”这个自己，也愿意一起放下。" },
+      { id: "scene_end", start: 163.0, duration: 21.7, emotion: 4, subtitle: "这就是佛学里很深的一个概念：善里的我执。人不仅会执着于利益，也会执着于“我是好人”。不仅会贪图被赞美，也会贪图被需要。真正的慈悲，不是让别人离不开你。而是连“我是慈悲的人”这个自己，也愿意一起放下。" },
     ];
 
     const container = document.getElementById("scenes-container");
