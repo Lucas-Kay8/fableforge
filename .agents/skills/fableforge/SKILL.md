@@ -1,6 +1,6 @@
 ---
 name: fableforge
-description: FableForge 寓言铸造厂的核心 AI Agent SOP。专门用于制作高品质"寓言/管理洞察"类视频的 Skill。包含从概念生成、寓言创作、TTS 配音、到 HyperFrames 视频渲染的完整工业化 SOP，以及视觉风格指南与技术陷阱手册。
+description: FableForge 寓言铸造厂的核心 AI Agent SOP。支持两种生产模式：模式 A（纯图片寓言视频）和模式 B（视频 B-roll + 文字叠加）。包含从概念生成、剧本创作、TTS 配音、素材采集、到 HyperFrames 视频渲染的完整工业化 SOP，以及视觉风格指南与技术陷阱手册。
 ---
 
 # 🔨 FableForge · 寓言铸造厂 AI Agent SOP
@@ -193,6 +193,42 @@ No Japanese elements, no Western elements, no modern objects.
 
 ---
 
+## 0.6 生产模式决策（内容定型后执行）
+
+FableForge 支持两种生产模式。**在用户确认内容方向后、动手写剧本之前**，必须先确定生产模式。
+
+### 两种模式概览
+
+| 维度 | 模式 A：纯图片 | 模式 B：视频 + 文字叠加 |
+|------|-------------|----------------------|
+| **适用题材** | 寓言故事、有角色弧线的隐喻 | 职场分析、管理洞察、观点输出 |
+| **画幅** | 16:9 横屏（1920×1080） | 9:16 竖屏（1080×1920） |
+| **视觉素材** | AI 生成的场景图片 | Pexels/Pixabay 免费 B-roll 视频 |
+| **文字呈现** | 底部字幕条 | 全屏文字叠加排版（暗化遮罩 + 大字） |
+| **叙事结构** | 角色驱动的故事弧线 | 论点驱动的拆解/金句输出 |
+| **产出节奏** | 较慢（等图片生成 + 风格校准） | 较快（视频下载 + FFmpeg 裁剪） |
+
+### 快速决策表
+
+| 判断条件 | 选择 |
+|---------|------|
+| 有具体角色名字和对话（僧人、狼王、船夫……） | 模式 A |
+| 叙事主语是「我」「你」「我们」「很多公司」 | 模式 B |
+| 需要展示隐喻（灯 → 认知、桥 → 管理） | 模式 A |
+| 需要展示数据对比（3 → 13）、金句输出 | 模式 B |
+| 用户明确说"拍成视频" / "竖版" / "短视频" | 模式 B |
+| 用户明确说"写个寓言" / "讲个故事" | 模式 A |
+
+> ⚠️ 用户可在停机确认时手动覆盖 AI 的模式推荐。模式确定后写入 `视频脚本.md` 头部的「内容定档」章节。
+
+### 模式选定后的流程分叉
+
+- **模式 A**：走 §1.5A（图片素材生成）→ §3.2（横屏 HTML 模板）→ 正常流程
+- **模式 B**：走 §1.5B（视频 B-roll 采集）→ §3.2B（竖屏 HTML + 文字叠加模板）→ 正常流程
+- 其余阶段（概念、剧本、TTS、BGM、音频解析、动画、渲染、发布）两种模式共享。
+
+---
+
 ## Stage 1：概念、剧本与物料生成
 
 ### 1.1 概念生成（须停机等待用户确认）
@@ -299,7 +335,9 @@ cp /Users/lucas/Work/09.Antigravity/语音模型/generate_cantillon.py \
   /Users/lucas/Work/09.Antigravity/语音模型/generate_{project_name}.py
 ```
 
-### 1.5 图片素材生成
+### 1.5A 图片素材生成（模式 A）
+
+> ℹ️ 仅模式 A（纯图片）执行此步。模式 B 跳转至 §1.5B。
 
 按剧本中每幕的"画面描述"逐一生成图片，命名严格遵循 `scene1.png`、`scene2.png` ... `scene{N}.png`，保存至 `YYYYMMDD/assets/`。
 
@@ -312,15 +350,76 @@ cp /Users/lucas/Work/09.Antigravity/语音模型/generate_cantillon.py \
 3. **生成即归档**：每张图生成后立即 `cp` 到 `assets/` 目录并验证文件名，避免最后批量操作时遗漏。
 4. **断点续传**：用 `ls assets/scene*.png | wc -l` 检查进度，只生成缺失的图片。
 
-**✅ Stage 1 退出标准（全部满足方可进入 Stage 2）：**
+### 1.5B 视频 B-roll 素材采集与裁剪（模式 B）
+
+> ℹ️ 仅模式 B（视频 + 文字叠加）执行此步。模式 A 跳转至 §1.5A。
+
+**步骤 1 — B-roll 关键词策划：**
+
+根据每幕的情绪和主题，在 `视频脚本.md` 中列出搜索关键词：
+```markdown
+## B-roll 素材规划
+| 幕 | 情绪 | 搜索关键词 | 画幅偏好 |
+|----|------|-----------|---------|
+| scene1 | 压迫/悬疑 | dark office, laptop screen | 竖屏优先 |
+| scene2 | 忙碌/混乱 | meeting room, people talking | 竖屏优先 |
+| scene7 | 升华/开阔 | city night, aerial view | 横屏可接受 |
+```
+
+**步骤 2 — 素材探测（浏览器手动或自动）：**
+
+在 Pexels (https://pexels.com/search/videos/) 搜索关键词，获取视频直链。优先选择：
+- 竖屏 9:16（`_1080_1920_` 或 `_1440_2560_`）
+- 时长 ≥ 10 秒（裁剪后留 ≤ 20 秒）
+- 无水印、免版税
+
+**步骤 3 — 编写自动化下载脚本 `download_and_process.py`：**
+
+脚本必须包含以下能力（参考实现见 `20260518_org_slowdown/download_and_process.py`）：
+
+```python
+VIDEO_MAP = {
+    "scene1.mp4": {"url": "https://videos.pexels.com/...", "is_vertical": True},
+    "scene2.mp4": {"url": "https://videos.pexels.com/...", "is_vertical": False},
+    # ...
+}
+```
+
+**下载容错规范：**
+- `curl -L -k --retry 5 --retry-delay 3 -H "User-Agent: Mozilla/5.0 ..."` — Pexels CDN 需要浏览器 UA，且 SSL 连接不稳定
+- 若 curl 返回非零但文件通过 `ffprobe` 校验 → 视为下载成功（Cloudflare 常在传输末尾断开连接）
+- 已存在的有效视频自动跳过（断点续传）
+
+**FFmpeg 竖屏裁剪规范：**
+
+| 原片画幅 | FFmpeg filter | 说明 |
+|---------|--------------|------|
+| 9:16 竖屏 | `scale=1080:1920` | 直接缩放 |
+| 16:9 横屏 | `crop=ih*9/16:ih,scale=1080:1920` | 居中裁剪后缩放 |
+
+所有视频统一参数：`-t 20 -c:v libx264 -crf 18 -an -y`（限时长 20s，去音轨）
+
+**步骤 4 — 运行脚本：**
 ```bash
-# 执行以下核查命令，输出应全部为绿色 OK
-ls YYYYMMDD/assets/ | grep -E "^scene_(cover|end)\.png$|^scene[0-9]+\.png$" | wc -l  # 输出数量应 == 剧本总分镜数
-ls YYYYMMDD/assets/narration.wav  # 文件必须存在
+export PATH=./bin:$PATH
+python3 download_and_process.py
+```
+
+**✅ Stage 1（素材）退出标准：**
+
+模式 A：
+```bash
+ls YYYYMMDD/assets/ | grep -E "^scene_(cover|end)\.png$|^scene[0-9]+\.png$" | wc -l  # == 剧本分镜数
 ```
 - [ ] `assets/` 下图片数量 == 剧本分镜数（含 cover 和 end）
-- [ ] `assets/narration.wav` 已生成
 - [ ] 图片命名符合规范（scene_cover, scene1~N, scene_end）
+
+模式 B：
+- [ ] `assets/` 下每幕对应的 `.mp4` 文件已就位且通过 `ffprobe` 校验
+- [ ] 所有视频为 1080×1920 竖屏、无音轨、时长 ≤ 20s
+
+通用：
+- [ ] `assets/narration.wav` 已生成
 
 ### 1.6 BGM 背景音乐匹配
 
@@ -417,9 +516,10 @@ mkdir -p YYYYMMDD/assets
 # 初始化 index.html（手动创建，参考下方 HTML 模板）
 ```
 
-### 3.2 HTML 基础模板（强制规范）
+### 3.2 HTML 基础模板 — 模式 A（强制规范）
 
-> ℹ️ 完整参考实现见 `template/index.html` 和 `template/style.css`。以下仅列出关键约束。
+> ℹ️ 以下为模式 A（纯图片）的 HTML/CSS 规范。模式 B 请跳转至 §3.2B。
+> 完整参考实现见 `template/index.html` 和 `template/style.css`。以下仅列出关键约束。
 
 **根容器必须包含 4 个 data-* 属性（缺一不可）：**
 ```html
@@ -449,7 +549,7 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 **图片引用规范：**
 - 使用 `assets/${id}.png`（如 `assets/scene1.png`），与 scene 数据的 id 字段一致
 
-### 3.3 CSS 布局规范（强制）
+### 3.3 CSS 布局规范 — 模式 A（强制）
 
 > ℹ️ 完整实现见 `template/style.css`。以下仅列出核心规则。
 
@@ -477,16 +577,126 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 }
 ```
 
+### 3.2B HTML 基础模板 — 模式 B（视频 + 文字叠加）
+
+> ℹ️ 以下为模式 B 的 HTML/CSS 规范。参考实现见 `20260518_org_slowdown/index.html` 和 `style.css`。
+
+**根容器（竖屏画幅）：**
+```html
+<div id="composition"
+     data-composition-id="composition"
+     data-width="1080"
+     data-height="1920"
+     data-start="0"
+     data-duration="{音频总时长}">
+```
+
+**⚠️ 视频标签扁平化铁律（最重要的规则）：**
+
+`<video>` 标签**必须**是 `#composition` 的**直接子元素**。严禁将 `<video data-start="...">` 嵌套在任何带有 `data-start` 的 `<div>` 内部，否则 HyperFrames 渲染器无法管理视频播放，**视频将冻结在第一帧**。
+
+```html
+<!-- ✅ 正确：视频作为舞台的扁平直接子元素 -->
+<video id="v-scene1" class="clip bg-video" src="assets/scene1.mp4" muted playsinline
+       data-start="0" data-duration="8" data-track-index="3"></video>
+<video id="v-scene2" class="clip bg-video" src="assets/scene2.mp4" muted playsinline
+       data-start="8" data-duration="10" data-track-index="3"></video>
+
+<!-- 文字叠加层：独立的场景 div，不含 <video> -->
+<div id="scene1" class="clip"
+     data-start="0" data-duration="8" data-track-index="1"
+     style="z-index: 1;">
+  <div class="dim-overlay"></div>
+  <div class="bottom-gradient"></div>
+  <div class="text-layer text-layer--bottom">
+    <div id="s1-line1" class="body-text">旁白文本</div>
+    <div id="s1-line2" class="headline">冲击<span class="accent">金句</span>。</div>
+  </div>
+</div>
+```
+
+```html
+<!-- ❌ 错误：视频嵌套在带 data-start 的 div 内 → 渲染冻结 -->
+<div id="scene1" class="clip" data-start="0" data-duration="8">
+  <video class="bg-video" src="assets/scene1.mp4" data-start="0" ...></video>
+</div>
+```
+
+**视频标签必备属性清单：**
+
+| 属性 | 说明 |
+|------|------|
+| `id` | 唯一标识，如 `v-scene1`（缺少则渲染冻结） |
+| `class="clip bg-video"` | `clip` 让框架管理可见性，`bg-video` 应用视频样式 |
+| `muted playsinline` | HyperFrames 接管播放，严禁加 `autoplay` 或 `loop` |
+| `data-start` | 视频在时间轴上的起始秒数 |
+| `data-duration` | 视频播放时长 |
+| `data-track-index` | 设为 `3`（与音频轨 0、场景轨 1/2 错开） |
+
+**全局装饰层（模式 B 推荐）：**
+```html
+<div class="vignette"></div>      <!-- 暗角 -->
+<div class="noise-overlay"></div>  <!-- 胶片噪点 -->
+```
+
+### 3.3B CSS 规范 — 模式 B（文字叠加排版）
+
+**核心 CSS 铁律：**
+```css
+.bg-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 1; /* 👈 必须！覆盖 .clip 的默认 opacity: 0 */
+}
+
+.dim-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.55); /* 确保文字可读 */
+}
+
+.bottom-gradient {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 600px;
+  background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, transparent 100%);
+  z-index: 1;
+}
+```
+
+**文字叠加组件库：**
+
+| 组件 | CSS 类 | 字号 | 用途 |
+|------|--------|------|------|
+| 大标题金句 | `.headline` | 72px / 900w | 核心冲击句 |
+| 超大数字 | `.headline--huge` | 160px | 数据对比（3 → 13） |
+| 正文旁白 | `.body-text` | 48px / 400w | 常规叙述 |
+| 小字说明 | `.caption-text` | 36px | 补充信息 |
+| 强调色 | `.accent` | — | 关键词高亮 |
+| 不等号卡 | `.neq` + `.text-card` | 96px | 「A ≠ B」对比卡片 |
+| 分屏对比 | `.split-compare` | — | 错误 vs 正确对比 |
+
+**文字定位方式：**
+- `.text-layer--bottom`：底部三分之一（大多数叙述场景）
+- `.text-layer--center`：垂直居中（金句升华、数字冲击）
+
 ### 3.4 静态验收（加入动画前的检查）
 
 用浏览器打开 `index.html`，截图确认：
+
+模式 A：
 - [ ] 每张图片完整显示，无裁切，无偏移
 - [ ] 图片在 1920×1080 的黑色背景内居中
 
+模式 B：
+- [ ] 视频背景可见（非黑屏），文字叠加清晰可读
+- [ ] `dim-overlay` 暗化效果适当（文字不被视频干扰）
+- [ ] 全屏文字卡（如「A ≠ B」）显示正确
+
 **✅ Stage 3 退出标准：**
-- [ ] 纯静态（无 GSAP 动画）下所有图片 100% 完整显示
+- [ ] 纯静态下所有视觉素材（图片或视频）100% 正确显示
 - [ ] `data-composition-id`、`data-width`、`data-height` 已正确设置
-- [ ] 字幕通过 `textContent` 注入，不存在硬编码的 HTML 字符串
+- [ ] 模式 A：字幕通过 `textContent` 注入；模式 B：文字叠加 DOM 结构完整
+- [ ] `npx hyperframes lint .` 报 **0 error(s)**
 
 ---
 
@@ -541,16 +751,45 @@ npx hyperframes@latest render YYYYMMDD/ -o YYYYMMDD/promo_video.mp4 --force-new
 
 ## Stage 5：发布与归档
 
-### 5.1 视频脚本元数据补充
+### 5.1 视频脚本元数据与多平台宣发策划补充
 
-在 `视频脚本.md` 中补充以下字段：
+在 `视频脚本.md` 中补充技术元数据与 **「小红书/短视频爆款宣发策划」**，确保视频具备出厂即可一键分发的高效爆款能力。
 
+#### 1. 技术参数补充（脚本底部）
 ```markdown
 ## 技术参数
 - **声纹**：VoxCPM2 用户克隆 / Kokoro am_adam
 - **实测时长**：{ffprobe 实测值}s
 - **BGM**：{BGM 名称} by {BGM 作者} (CC BY 4.0)
 - **YouTube**：{URL}
+```
+
+#### 2. 小红书/短视频宣发策划（脚本最下方）
+在 `视频脚本.md` 的最底部，**强制追加**小红书专属的宣发案策划，包含：
+1. **爆款标题推荐**（至少 3-4 个）：
+   - *写作公式 1 (痛点直击)*：`[痛点表情] + 痛点揭露/反差怪象 + 为什么会这样？`（例如：🤯 职场怪象：为什么招的人越贵，公司反而越慢？）
+   - *写作公式 2 (认知颠覆)*：`[警示表情] + 戳破某种常见幻觉/认知错误！`（例如：🚫 戳破老板的幻觉：个体优秀 ≠ 组织高效！）
+   - *写作公式 3 (具体数字)*：`[下降/冲突表情] + 极端数字对比 + 场景重现`（例如：📉 协同内耗：本来3人能决定的事，为什么变成了13人讨论？）
+2. **封面/配图文字建议**：设计大字冲击的主副标题，做首屏抓手。
+3. **小红书正文文案**：
+   - 使用丰富的 **Emoji** 进行段落排版，提升可读性。
+   - 包含：**痛点共情**（点明现状） + **干货输出**（列出 3 点精辟洞察或引述视频金句） + **互动钩子**（引导评论区分享见解，如“你们公司也是这样吗？”） + **精准热门标签**（如 `#职场那些事儿 #组织架构 #管理思维 #职场内耗`）。
+
+*规范模板示例：*
+```markdown
+## 5. 小红书宣发策划
+
+### 爆款标题推荐
+1. [小红书标题 1]
+2. [小红书标题 2]
+3. [小红书标题 3]
+
+### 封面/配图文字建议
+- **主标题**：[极简有力]
+- **副标题**：[点题/对比]
+
+### 小红书正文文案
+[带有丰富 Emoji、干货条理明晰、包含互动提问和小红书热门 Tag 的 300-500 字社交文案]
 ```
 
 ### 5.2 README 更新
@@ -568,7 +807,7 @@ git commit -m "feat: Add {video_title} project"
 ```
 
 **✅ Stage 5 退出标准：**
-- [ ] `视频脚本.md` 包含完整元数据（声纹、时长、BGM、YouTube 链接）
+- [ ] `视频脚本.md` 包含完整元数据（声纹、时长、BGM、YouTube 链接）以及小红书爆款标题与宣发策划文案
 - [ ] `README.md` 中英双语演示作品表格已更新
 - [ ] `git commit` 成功
 
@@ -603,14 +842,31 @@ git commit -m "feat: Add {video_title} project"
 
 ## 附录 B：已知技术陷阱速查
 
+**模式 A（纯图片）陷阱：**
+
 | 现象 | 根因 | 修复 |
 |------|------|------|
 | 图片裁切/偏移 | GSAP 矩阵覆盖了 `translate` 居中 | 改用 `object-fit: contain`，绝不用 `translate` |
 | 正方形图片顶部被裁 | `object-fit: cover` 裁切了主体 | 强制 16:9 生图，或改用 `contain` + 毛玻璃背景 |
 | 视频提前截断/少幕 | 字幕中含未转义的 `<` `>` 破坏 DOM | 改用 `textContent` 注入 |
+| 画面色偏 | img 标签含 `filter: hue-rotate(...)` | 删除该 filter |
+
+**模式 B（视频 + 文字叠加）陷阱：**
+
+| 现象 | 根因 | 修复 |
+|------|------|------|
+| 视频背景全黑 | `.clip` 默认 `opacity: 0`，视频继承了 | `.bg-video { opacity: 1; }` 物理覆盖 |
+| 渲染后视频冻结在第一帧 | `<video data-start>` 嵌套在 `<div data-start>` 内 | 扁平化为 `#composition` 的直接子元素 |
+| `media_missing_id` 错误 | `<video>` 没有 `id` 属性 | 每个 `<video>` 加唯一 `id` |
+| Pexels 下载 SSL 报错 | Cloudflare 在传输末尾断开连接 | curl `--retry 5`，若文件通过 `ffprobe` 校验则视为成功 |
+| 横屏视频裁切后比例变形 | 直接 scale 而非先 crop | 横屏用 `crop=ih*9/16:ih,scale=1080:1920` |
+
+**通用陷阱：**
+
+| 现象 | 根因 | 修复 |
+|------|------|------|
 | `inspect` 报 `totalDuration undefined` | 根容器缺少 `data-duration` | 补上 `data-duration="{音频总长}"` |
 | `inspect` 报错 / MP4 时长随机 | 违反渲染合约 | 时间轴永远 `paused: true`，不写 `play()` |
-| 画面色偏 | img 标签含 `filter: hue-rotate(...)` | 删除该 filter |
 | `FFmpeg not found` | 环境未配置 | `export PATH=./bin:$PATH` |
 
 ---
@@ -631,6 +887,7 @@ mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
 
 ## 附录 D：项目归档结构
 
+**模式 A（纯图片寺言视频）：**
 ```text
 /YYYYMMDD/
   ├── index.html          (核心时间轴，Stage 3/4 产物)
@@ -640,8 +897,23 @@ mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
   │   ├── scene{N}.png
   │   ├── scene_end.png   (结尾图，点题升华)
   │   ├── narration.wav   (TTS 配音，Stage 1.3 产物)
-  │   ├── bgm.mp3         (背景音乐，Stage 1.5 产物)
+  │   ├── bgm.mp3         (背景音乐，Stage 1.6 产物)
   │   └── transcript.json (Whisper 时间戳，Stage 2.2 产物)
   ├── 视频脚本.md          (剧本，Stage 1.2 产物)
   └── promo_video.mp4     (最终成品，Stage 4.3 产物，Git 豁免名单)
+```
+
+**模式 B（视频 + 文字叠加）：**
+```text
+/YYYYMMDD_{project_name}/
+  ├── index.html               (核心时间轴，竖屏 1080×1920)
+  ├── style.css                (独立样式表，文字叠加组件库)
+  ├── download_and_process.py   (B-roll 自动化下载/裁剪脚本)
+  ├── assets/
+  │   ├── scene1.mp4 ~ sceneN.mp4  (裁剪后的 B-roll 视频，1080×1920，无音轨)
+  │   ├── narration.wav            (TTS 配音)
+  │   └── bgm.mp3                  (背景音乐)
+  ├── 视频脚本.md                   (剧本 + B-roll 素材规划表)
+  └── renders/
+      └── {project}_YYYY-MM-DD_HH-MM-SS.mp4  (渲染成品)
 ```

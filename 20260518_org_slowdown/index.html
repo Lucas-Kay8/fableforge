@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>公司招了很多优秀的人，为什么组织反而越来越慢？</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="composition"
+       data-composition-id="composition"
+       data-width="1080"
+       data-height="1920"
+       data-start="0"
+       data-duration="93.3">
+
+    <!-- 全局装饰层 -->
+    <div class="vignette"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- 音频轨道 -->
+    <audio id="narration"
+           src="assets/narration.wav"
+           data-start="0"
+           data-duration="93.3"
+           data-track-index="0">
+    </audio>
+
+    <!-- 背景音乐轨道 -->
+    <audio id="bgm"
+           src="assets/bgm.mp3"
+           data-start="0"
+           data-duration="93.3"
+           data-track-index="-1"
+           data-volume="0.12">
+    </audio>
+
+    <!-- ==========================================
+         视频背景轨道 (扁平化 direct children)
+         ========================================== -->
+    <video id="v-scene1" class="clip bg-video" src="assets/laptop_dark.mp4" muted playsinline
+           data-start="0" data-duration="8" data-track-index="3"></video>
+    <video id="v-scene2" class="clip bg-video" src="assets/meeting.mp4" muted playsinline
+           data-start="8" data-duration="10" data-track-index="3"></video>
+    <video id="v-scene3" class="clip bg-video" src="assets/walking_office.mp4" muted playsinline
+           data-start="18" data-duration="14" data-track-index="3"></video>
+    <video id="v-scene4" class="clip bg-video" src="assets/busy_office.mp4" muted playsinline
+           data-start="32" data-duration="14" data-track-index="3"></video>
+    <video id="v-scene5" class="clip bg-video" src="assets/typing.mp4" muted playsinline
+           data-start="46" data-duration="12" data-track-index="3"></video>
+    <video id="v-scene6" class="clip bg-video" src="assets/code_screen.mp4" muted playsinline
+           data-start="58" data-duration="16" data-track-index="3"></video>
+    <video id="v-scene7" class="clip bg-video" src="assets/city_night.mp4" muted playsinline
+           data-start="74" data-duration="14" data-track-index="3"></video>
+    <video id="v-scene8" class="clip bg-video" src="assets/laptop_glow.mp4" muted playsinline
+           data-start="88" data-duration="5.3" data-track-index="3"></video>
+
+    <!-- ==========================================
+         幕 1：片头 hook（0~8s）
+         旁白："很多公司很奇怪。招的人越来越贵。
+               履历越来越强。但组织，反而越来越慢。"
+         ========================================== -->
+    <div id="scene1" class="clip"
+         data-start="0" data-duration="8" data-track-index="1"
+         style="z-index: 1;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="top-gradient"></div>
+      <div class="text-layer text-layer--bottom">
+        <div id="s1-line1" class="body-text">很多公司很奇怪。</div>
+        <div id="s1-line2" class="body-text">招的人越来越贵。履历越来越强。</div>
+        <div id="s1-line3" class="headline">但组织，反而<span class="accent">越来越慢</span>。</div>
+      </div>
+      <div class="side-line"></div>
+    </div>
+
+    <!-- ==========================================
+         幕 2：第一冲突 — 快镜头蒙太奇（8~18s）
+         旁白："会越来越多。协同越来越复杂。
+               每个人都很专业。但事情，就是推进不动。"
+         ========================================== -->
+    <div id="scene2" class="clip"
+         data-start="8" data-duration="10" data-track-index="1"
+         style="z-index: 2;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--bottom">
+        <div id="s2-line1" class="body-text">会越来越多。协同越来越复杂。</div>
+        <div id="s2-line2" class="body-text">每个人都很专业。</div>
+        <div id="s2-line3" class="headline">但事情，就是<span class="accent">推进不动</span>。</div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         幕 3：错误判断① — 核心论点（18~32s）
+         旁白："很多老板有个错觉……但现实是——
+               个体优秀，不等于组织高效。"
+         ========================================== -->
+    <div id="scene3" class="clip"
+         data-start="18" data-duration="14" data-track-index="1"
+         style="z-index: 3;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--bottom">
+        <div id="s3-line1" class="body-text">很多老板有个错觉。</div>
+        <div id="s3-line2" class="body-text">觉得只要不断招优秀的人，</div>
+        <div id="s3-line3" class="body-text">组织就会越来越强。</div>
+      </div>
+    </div>
+
+    <!-- 幕 3b：全屏文字卡「个体优秀 ≠ 组织高效」 -->
+    <div id="scene3b" class="clip"
+         data-start="28" data-duration="4" data-track-index="2"
+         style="z-index: 4;">
+      <div class="text-card">
+        <div id="s3b-left" class="headline" style="font-size: 64px; color: var(--text-secondary);">个体优秀</div>
+        <div id="s3b-neq" class="neq">≠</div>
+        <div id="s3b-right" class="headline" style="font-size: 64px;">组织高效</div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         幕 4：错误判断② — 数字冲击（32~46s）
+         旁白："效率低了……不是减复杂度，而是继续招人.
+               本来3个人能决定的事，变成13个人一起讨论。"
+         ========================================== -->
+    <div id="scene4" class="clip"
+         data-start="32" data-duration="14" data-track-index="1"
+         style="z-index: 5;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--center">
+        <div id="s4-line1" class="body-text" style="text-align: center;">本来能决定的人数</div>
+        <div id="s4-num-from" class="headline--huge accent" style="text-align: center;">3</div>
+        <div id="s4-arrow" class="caption-text" style="text-align: center; font-size: 48px;">→</div>
+        <div id="s4-num-to" class="headline--huge accent" style="text-align: center;">13</div>
+        <div id="s4-line2" class="body-text" style="text-align: center;">个人一起讨论</div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         幕 5：最危险的误判（46~58s）
+         旁白："更危险的是……把参与感误认为协作.
+               每个人都参与了。但没人真正负责。"
+         ========================================== -->
+    <div id="scene5" class="clip"
+         data-start="46" data-duration="12" data-track-index="1"
+         style="z-index: 6;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--bottom">
+        <div id="s5-line1" class="body-text">更危险的是——</div>
+        <div id="s5-line2" class="body-text">很多组织，已经开始把</div>
+        <div id="s5-line3" class="headline"><span class="accent">"参与感"</span>，误认为"协作"。</div>
+      </div>
+    </div>
+
+    <!-- 幕 5b：文字卡「参与感 ≠ 协作」 -->
+    <div id="scene5b" class="clip"
+         data-start="54" data-duration="4" data-track-index="2"
+         style="z-index: 7;">
+      <div class="split-compare">
+        <div id="s5b-wrong" class="wrong">参与感</div>
+        <div id="s5b-neq" class="neq">≠</div>
+        <div id="s5b-right" class="right">协作</div>
+        <div id="s5b-sub" class="caption-text" style="margin-top: 40px;">每个人都参与了。但没人真正负责。</div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         幕 6：AI 视角 — 冷静拆解（58~74s）
+         旁白："AI看组织的时候，其实特别残忍。
+               它不看谁厉害。它只看——
+               一个决策，到底经过多少层。"
+         ========================================== -->
+    <div id="scene6" class="clip"
+         data-start="58" data-duration="16" data-track-index="1"
+         style="z-index: 8;">
+      <div class="dim-overlay" style="background: rgba(0, 0, 0, 0.4);"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--bottom">
+        <div id="s6-line1" class="body-text">AI看组织的时候，</div>
+        <div id="s6-line2" class="body-text">其实特别<span class="accent">残忍</span>。</div>
+        <div id="s6-line3" class="body-text" style="margin-top: 24px;">它不看谁厉害。它只看——</div>
+        <div id="s6-line4" class="headline" style="margin-top: 16px;">一个决策，到底经过<span class="accent">多少层</span>。</div>
+      </div>
+      <div class="side-line" style="left: auto; right: 40px;"></div>
+    </div>
+
+    <!-- ==========================================
+         幕 7：升华金句（74~88s）
+         旁白："组织变慢，不是因为人才不够……
+               最大的成本不是工资，而是协同.
+               让优秀的人——不互相消耗。"
+         ========================================== -->
+    <div id="scene7" class="clip"
+         data-start="74" data-duration="14" data-track-index="1"
+         style="z-index: 9;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--center">
+        <div id="s7-line1" class="body-text" style="text-align: center;">一个组织最大的成本</div>
+        <div id="s7-line2" class="body-text" style="text-align: center;">往往不是工资。</div>
+        <div id="s7-line3" class="headline" style="text-align: center; margin-top: 32px;">而是<span class="accent">协同</span>。</div>
+        <div id="s7-line4" class="body-text" style="text-align: center; margin-top: 48px;">真正成熟的组织，</div>
+        <div id="s7-line5" class="body-text" style="text-align: center;">不是拥有最多优秀的人。</div>
+        <div id="s7-line6" class="headline" style="text-align: center; margin-top: 16px;">而是能让优秀的人——</div>
+        <div id="s7-final" class="headline" style="text-align: center; font-size: 84px; margin-top: 24px;"><span class="accent">不互相消耗</span>。</div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         幕 8：结尾互动（88~93.3s）
+         旁白："你们公司有没有这种感觉？
+               你觉得问题在人，还是在组织本身？"
+         ========================================== -->
+    <div id="scene8" class="clip"
+         data-start="88" data-duration="5.3" data-track-index="1"
+         style="z-index: 10;">
+      <div class="dim-overlay"></div>
+      <div class="bottom-gradient"></div>
+      <div class="text-layer text-layer--center">
+        <div id="s8-line1" class="body-text" style="text-align: center;">你们公司有没有这种感觉？</div>
+        <div id="s8-line2" class="body-text" style="text-align: center; margin-top: 32px;">你觉得问题在<span class="accent">人</span>，</div>
+        <div id="s8-line3" class="body-text" style="text-align: center;">还是在<span class="accent">组织本身</span>？</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    window.__timelines = window.__timelines || {};
+    window.__timelines["composition"] = tl;
+
+    // ==========================================
+    // 幕 1：片头 hook（0~8s）
+    // ==========================================
+    tl.set("#scene1", { autoAlpha: 1 }, 0);
+    // 文字逐行入场
+    tl.from("#s1-line1", { opacity: 0, y: 30, duration: 0.6, ease: "power3.out" }, 0.3);
+    tl.from("#s1-line2", { opacity: 0, y: 25, duration: 0.5, ease: "power2.out" }, 2.0);
+    tl.from("#s1-line3", { opacity: 0, y: 20, scale: 0.95, duration: 0.7, ease: "back.out(1.4)" }, 4.5);
+    // 侧线装饰入场
+    tl.from(".side-line", { scaleY: 0, duration: 0.8, ease: "power2.out" }, 0.5);
+
+    // ==========================================
+    // 幕 2：第一冲突（8~18s）— blur crossfade 转场
+    // ==========================================
+    tl.set("#scene2", { autoAlpha: 1 }, 8);
+    tl.fromTo("#scene2",
+      { opacity: 0, filter: "blur(15px)" },
+      { opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "power2.out" },
+      8
+    );
+    tl.from("#s2-line1", { opacity: 0, x: -30, duration: 0.5, ease: "power3.out" }, 8.5);
+    tl.from("#s2-line2", { opacity: 0, x: -25, duration: 0.5, ease: "power2.out" }, 10.0);
+    tl.from("#s2-line3", { opacity: 0, y: 20, scale: 0.96, duration: 0.6, ease: "back.out(1.3)" }, 13.0);
+
+    // 幕 1 清理
+    tl.set("#scene1", { autoAlpha: 0 }, 8.8);
+
+    // ==========================================
+    // 幕 3：错误判断①（18~32s）— squeeze 转场
+    // ==========================================
+    tl.set("#scene3", { autoAlpha: 1 }, 18);
+    tl.fromTo("#scene3",
+      { opacity: 0, scaleY: 0.92 },
+      { opacity: 1, scaleY: 1, duration: 0.4, ease: "power3.out" },
+      18
+    );
+    tl.from("#s3-line1", { opacity: 0, y: 30, duration: 0.5, ease: "power3.out" }, 18.4);
+    tl.from("#s3-line2", { opacity: 0, y: 25, duration: 0.5, ease: "power2.out" }, 20.0);
+    tl.from("#s3-line3", { opacity: 0, y: 20, duration: 0.5, ease: "power2.out" }, 22.0);
+
+    tl.set("#scene2", { autoAlpha: 0 }, 18.6);
+
+    // 幕 3b：全屏文字卡「个体优秀 ≠ 组织高效」（28~32s）— zoom through 转场
+    tl.set("#scene3b", { autoAlpha: 1 }, 28);
+    tl.fromTo("#scene3b",
+      { opacity: 0, scale: 0.85 },
+      { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" },
+      28
+    );
+    tl.from("#s3b-left", { opacity: 0, x: -60, duration: 0.5, ease: "power3.out" }, 28.3);
+    tl.from("#s3b-neq", { opacity: 0, scale: 2.5, rotation: -15, duration: 0.4, ease: "back.out(2)" }, 28.6);
+    tl.from("#s3b-right", { opacity: 0, x: 60, duration: 0.5, ease: "power3.out" }, 28.8);
+
+    tl.set("#scene3", { autoAlpha: 0 }, 28.5);
+    tl.set("#scene3b", { autoAlpha: 0 }, 32.5);
+
+    // ==========================================
+    // 幕 4：数字冲击（32~46s）— staggered blocks 转场
+    // ==========================================
+    tl.set("#scene4", { autoAlpha: 1 }, 32);
+    tl.fromTo("#scene4",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3, ease: "none" },
+      32
+    );
+    tl.from("#s4-line1", { opacity: 0, y: 20, duration: 0.5, ease: "power2.out" }, 32.5);
+    tl.from("#s4-num-from", { opacity: 0, scale: 0.5, duration: 0.6, ease: "back.out(2)" }, 34.0);
+    tl.from("#s4-arrow", { opacity: 0, x: -20, duration: 0.4, ease: "power2.out" }, 35.5);
+    tl.from("#s4-num-to", { opacity: 0, scale: 3, duration: 0.8, ease: "expo.out" }, 36.0);
+    // 数字脉冲效果
+    tl.to("#s4-num-to", { scale: 1.1, duration: 0.3, ease: "power1.inOut", yoyo: true, repeat: 1 }, 37.0);
+    tl.from("#s4-line2", { opacity: 0, y: 15, duration: 0.5, ease: "power2.out" }, 38.0);
+
+    // ==========================================
+    // 幕 5：最危险的误判（46~58s）— color dip to black 转场
+    // ==========================================
+    // color dip to black 转场：幕4 淡出
+    tl.set("#scene4", { autoAlpha: 0 }, 46);
+    tl.set("#scene5", { autoAlpha: 1 }, 46);
+    tl.fromTo("#scene5",
+      { opacity: 0 },
+      { opacity: 1, duration: 1.0, ease: "power1.in" },
+      46.3
+    );
+    tl.from("#s5-line1", { opacity: 0, y: 30, duration: 0.5, ease: "power3.out" }, 47.0);
+    tl.from("#s5-line2", { opacity: 0, y: 25, duration: 0.5, ease: "power2.out" }, 48.5);
+    tl.from("#s5-line3", { opacity: 0, y: 20, scale: 0.97, duration: 0.6, ease: "back.out(1.2)" }, 50.0);
+
+
+
+    // 幕 5b：文字卡「参与感 ≠ 协作」（54~58s）
+    tl.set("#scene5b", { autoAlpha: 1 }, 54);
+    tl.fromTo("#scene5b",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: "power2.out" },
+      54
+    );
+    tl.from("#s5b-wrong", { opacity: 0, y: -40, duration: 0.5, ease: "power3.out" }, 54.3);
+    tl.from("#s5b-neq", { opacity: 0, scale: 3, rotation: 10, duration: 0.4, ease: "back.out(2.5)" }, 54.6);
+    tl.from("#s5b-right", { opacity: 0, y: 40, duration: 0.5, ease: "power3.out" }, 54.8);
+    tl.from("#s5b-sub", { opacity: 0, y: 15, duration: 0.6, ease: "power2.out" }, 55.5);
+
+    tl.set("#scene5", { autoAlpha: 0 }, 54.5);
+    tl.set("#scene5b", { autoAlpha: 0 }, 58.5);
+
+    // ==========================================
+    // 幕 6：AI 视角（58~74s）— blur crossfade 转场 (缓)
+    // ==========================================
+    tl.set("#scene6", { autoAlpha: 1 }, 58);
+    tl.fromTo("#scene6",
+      { opacity: 0, filter: "blur(20px)" },
+      { opacity: 1, filter: "blur(0px)", duration: 1.0, ease: "sine.inOut" },
+      58
+    );
+    tl.from("#s6-line1", { opacity: 0, y: 25, duration: 0.5, ease: "power2.out" }, 59.0);
+    tl.from("#s6-line2", { opacity: 0, y: 20, duration: 0.5, ease: "power3.out" }, 61.0);
+    tl.from("#s6-line3", { opacity: 0, y: 20, duration: 0.6, ease: "power2.out" }, 64.0);
+    tl.from("#s6-line4", { opacity: 0, y: 15, scale: 0.97, duration: 0.7, ease: "back.out(1.2)" }, 67.0);
+
+    // ==========================================
+    // 幕 7：升华金句（74~88s）— gentle crossfade 转场
+    // ==========================================
+    tl.set("#scene7", { autoAlpha: 1 }, 74);
+    tl.fromTo("#scene7",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: "sine.inOut" },
+      74
+    );
+    tl.from("#s7-line1", { opacity: 0, y: 30, duration: 0.5, ease: "power2.out" }, 74.6);
+    tl.from("#s7-line2", { opacity: 0, y: 25, duration: 0.5, ease: "power2.out" }, 76.0);
+    tl.from("#s7-line3", { opacity: 0, scale: 0.9, duration: 0.7, ease: "back.out(1.5)" }, 77.5);
+    tl.from("#s7-line4", { opacity: 0, y: 20, duration: 0.5, ease: "power2.out" }, 80.0);
+    tl.from("#s7-line5", { opacity: 0, y: 20, duration: 0.5, ease: "power2.out" }, 81.5);
+    tl.from("#s7-line6", { opacity: 0, y: 15, duration: 0.5, ease: "power3.out" }, 83.0);
+    tl.from("#s7-final", { opacity: 0, scale: 0.8, duration: 0.8, ease: "expo.out" }, 84.5);
+
+    tl.set("#scene6", { autoAlpha: 0 }, 74.8);
+
+    // ==========================================
+    // 幕 8：结尾互动（88~93.3s）— gentle crossfade + 最终淡出
+    // ==========================================
+    tl.set("#scene8", { autoAlpha: 1 }, 88);
+    tl.fromTo("#scene8",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.6, ease: "sine.inOut" },
+      88
+    );
+    tl.from("#s8-line1", { opacity: 0, y: 25, duration: 0.5, ease: "power2.out" }, 88.5);
+    tl.from("#s8-line2", { opacity: 0, y: 20, duration: 0.5, ease: "power2.out" }, 89.5);
+    tl.from("#s8-line3", { opacity: 0, y: 15, duration: 0.5, ease: "power2.out" }, 90.5);
+
+    tl.set("#scene7", { autoAlpha: 0 }, 88.8);
+
+    // 最终淡出到黑（仅最后一幕允许 exit 动画）
+    tl.to("#scene8", { opacity: 0, duration: 1.5, ease: "power1.in" }, 91.8);
+  </script>
+</body>
+</html>
