@@ -75,7 +75,29 @@ your-workspace/
 
 The heart of FableForge is a **command-level executable SOP** for AI Agents, stored in [`.agents/skills/fableforge/SKILL.en.md`](./.agents/skills/fableforge/SKILL.en.md).
 
+```mermaid
+graph TD
+    classDef stage fill:#1e1e2e,stroke:#3b4252,stroke-width:1px,color:#d8dee9;
+    classDef active fill:#2e3440,stroke:#88c0d0,stroke-width:2px,color:#88c0d0;
+
+    Concept["💡 Stage 1: Concept & Script<br/>(AI self-check & manual gate)"]:::stage
+    Creative["🎨 Stage 1.4-1.6: Creative Assets<br/>(16:9 Wide Shot + Voice Cloning)"]:::stage
+    BGM["🎵 Stage 1.7: Music Matching<br/>(Mood awareness & auto-ducking BGM)"]:::stage
+    Whisper["⏱️ Stage 2: Precision Timeline<br/>(Whisper word-level transcription)"]:::stage
+    Static["📐 Stage 3: Static Layout Build<br/>(100% no-crop CSS safe zone)"]:::stage
+    inspect["🎬 Stage 4: Pre-flight Gate<br/>(inspect verification & StaticGuard)"]:::stage
+    Render["🚀 Final Render: Export MP4 via HyperFrames"]:::active
+
+    Concept --> Creative
+    Creative --> BGM
+    BGM --> Whisper
+    Whisper --> Static
+    Static --> inspect
+    inspect --> Render
+```
+
 | Stage | What Happens | Exit Criteria |
+
 |-------|-------------|---------------|
 | **Stage 1** Concept & Asset Generation | Write allegory, generate images, synthesize voice | Image count == scene count, audio file ready |
 | **Stage 1.6** Typography Poster | Generate click-optimized pure-text cover and CTA end card | Cover & End card ready |
@@ -196,9 +218,31 @@ your-workspace/
 
 ### 🧠 核心 SOP：五段式工业化流水线
 
-本项目的核心是一套写给 AI Agent 的**命令级可执行 SOP**，存放于 [`.agents/skills/fableforge/SKILL.md`](./.agents/skills/fableforge/SKILL.md)。
+本项目的核心是一套写给 AI Agent 的**命令级可执行 SOP**，存放于 [`.agents/skills/fableforge/SKILL.md`](./.agents/skills/fableforge/SKILL.md).
+
+```mermaid
+graph TD
+    classDef stage fill:#1e1e2e,stroke:#3b4252,stroke-width:1px,color:#d8dee9;
+    classDef active fill:#2e3440,stroke:#88c0d0,stroke-width:2px,color:#88c0d0;
+
+    Concept["💡 Stage 1: 概念策划 & 剧本生成<br/>(AI 概念自检 & 停机确认)"]:::stage
+    Creative["🎨 Stage 1.4-1.6: 声画资产筹备<br/>(DALL-E 3 16:9生图 + VoxCPM2 声纹克隆)"]:::stage
+    BGM["🎵 Stage 1.7: 自动化配乐匹配<br/>(情绪档位识别 & 智能音量避让)"]:::stage
+    Whisper["⏱️ Stage 2: 帧级对齐时间轴<br/>(Whisper 词级断句 -> 绝对时长映射)"]:::stage
+    Static["📐 Stage 3: 静态网页排版<br/>(DOM 动态注入 & CSS 100% 不裁切安全区布局)"]:::stage
+    inspect["🎬 Stage 4: 自动化发布预检<br/>(inspect 校验 & StaticGuard 门禁检测)"]:::stage
+    Render["🚀 最终渲染: HyperFrames 编译导出 MP4"]:::active
+
+    Concept --> Creative
+    Creative --> BGM
+    BGM --> Whisper
+    Whisper --> Static
+    Static --> inspect
+    inspect --> Render
+```
 
 | 阶段 | 做什么 | 退出标准 |
+
 |------|--------|---------|
 | **Stage 1** 概念与资产生成 | 创作内容、生成分镜素材、合成语音 | 主体视觉与音频文件就位 |
 | **Stage 1.6** 纯文字海报生成 | 自动生成高转化率纯文字封面与封底 | 封面与封底就位 |

@@ -1,12 +1,26 @@
 {
   "name": "ai-video-studio",
   "version": "1.0.0",
-  "private": true,
+  "description": "FableForge: An advanced OpenClaw agent skill and universal industrial-grade video production pipeline powered by HyperFrames.",
+  "keywords": [
+    "openclaw",
+    "clawhub-skill",
+    "hyperframes",
+    "ai-video",
+    "tts",
+    "voice-cloning",
+    "gsap"
+  ],
+  "author": "Lucas-Kay8",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "npx --yes hyperframes@0.6.2 preview",
     "check": "npx --yes hyperframes@0.6.2 lint && npx --yes hyperframes@0.6.2 validate && npx --yes hyperframes@0.6.2 inspect",
     "render": "npx --yes hyperframes@0.6.2 render",
     "publish": "npx --yes hyperframes@0.6.2 publish"
+  },
+  "devDependencies": {
+    "clawhub": "^0.16.0"
   }
 }
