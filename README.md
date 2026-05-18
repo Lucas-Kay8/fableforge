@@ -1,10 +1,10 @@
 <div align="center">
 
 # 🔨 FableForge
-### 寓言铸造厂
+### 通用制片厂
 
-**AI-powered Chinese allegory video pipeline**
-*Give an AI Agent a playbook, and it will forge a management allegory short film — in your own voice.*
+**AI-powered universal video pipeline**
+*Give an AI Agent a playbook, and it will forge any insight into a compelling short video.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![HyperFrames](https://img.shields.io/badge/Powered%20by-HyperFrames-blue)](https://hyperframes.heygen.com)
@@ -20,9 +20,9 @@
 <a name="english"></a>
 ## 🇬🇧 English
 
-FableForge is a fully automated video production pipeline that turns a management concept into a polished short video — complete with narration in **your cloned voice**, AI-generated visuals, frame-accurate subtitles, and cinematic Ken Burns motion.
+FableForge is a fully automated video production pipeline that turns any concept into a polished short video — complete with narration in **your cloned voice**, AI-generated visuals, frame-accurate subtitles, and cinematic Ken Burns motion.
 
-> **FableForge** = Fable × Forge: Forge a deep management insight into a compelling allegorical short film using AI.
+> **FableForge**: A universal AI video production pipeline.
 
 ### ✨ Demo Works
 
@@ -38,110 +38,41 @@ FableForge is a fully automated video production pipeline that turns a managemen
 
 > 📺 Drag `final_video.mp4` into a browser or media player to watch.
 
-### 🚀 Quick Start
+### 🚀 Quick Start (AI-First Installation)
 
-> The core experience: narrating your allegory **in your own cloned voice**. First-time setup takes ~30 minutes.
+FableForge is packaged as an **AI Agent Skill**. You don't need to manually clone repositories or install dependencies. Just give the Skill to your AI assistant (like Cursor, Cline, or Gemini), and it will build the studio for you.
 
-#### Phase 1 — Record Your Voice (once, forever)
-
-VoxCPM2 is a voice-cloning model. It needs a 15-second sample of your voice, then permanently mimics your timbre.
-
-**Step 1 — Prepare your recording environment**
-- Quiet room (no AC noise or echo)
-- Any recording app (Mac QuickTime is fine, or Audacity)
-- Wired headset mic (much better than built-in)
-
-**Step 2 — Record a 15-second voice sample**
-
-Read this text naturally (don't slow down):
-> *"Hi, I'm recording my voice sample. This audio will serve as my voiceprint template, helping the AI accurately reproduce my tone and emotion. This is [your name], thank you for listening."*
-
-Export as **WAV**, 44100 Hz or higher. Save to `voice-model/01_samples/my_voice.wav`.
-
-**Step 3 — Install VoxCPM2**
-
+**Step 1 — Download the Skill**
+In an empty directory, run:
 ```bash
-python3 -m venv voice-model/venv
-source voice-model/venv/bin/activate
-pip install voxcpm soundfile torch numpy
-# First run auto-downloads the VoxCPM2 model (~4 GB)
+npx skills add Lucas-Kay8/ai-video-studio
 ```
 
-**Step 4 — Test voice cloning**
+**Step 2 — Tell your AI to initialize**
+Open your AI chat and say:
+> "Initialize the FableForge studio."
 
-```bash
-cp voice-model/generate.py.example voice-model/generate.py
-# Edit generate.py → set REFERENCE_WAV and PROMPT_TEXT
-python voice-model/generate.py
-# Output appears in voice-model/02_output/ — play it to verify
-```
+The AI will read the `SKILL.md`, automatically scaffold the `template/` and `voice-model/` directories, and download FFmpeg for you.
 
-#### Phase 2 — Configure the Project (once)
+**Step 3 — Record your voice sample**
+Once the AI finishes initialization, it will prompt you to record a 15-second voice sample and place it in `voice-model/01_samples/my_voice.wav`.
 
-```bash
-git clone https://github.com/Lucas-Kay8/fableforge.git
-cd fableforge
-
-# Install FFmpeg (required for rendering)
-curl -L https://evermeet.cx/ffmpeg/get/zip -o ffmpeg.zip && unzip ffmpeg.zip
-curl -L https://evermeet.cx/ffmpeg/get/ffprobe/zip -o ffprobe.zip && unzip ffprobe.zip
-mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
-```
-
-#### Phase 3 — Generate Your First Allegory Video
-
-```bash
-cp -r template/ $(date +%Y%m%d)/
-cd $(date +%Y%m%d)/
-
-# 1. Write your script (fill in the storyboard template)
-open script-template.md      # English template
-# open 视频脚本.md            # Chinese template
-
-# 2. Generate images with Midjourney / Flux / DALL·E
-# Name them scene1.png, scene2.png ... → put in assets/
-
-# 3. Generate narration in your voice
-source ../voice-model/venv/bin/activate
-python ../voice-model/generate.py   # set TARGET_TEXT to your full narration
-cp ../voice-model/02_output/*.wav assets/narration.wav
-
-# 4. Transcribe audio → get precise timestamps
-export PATH=../bin:$PATH
-npx hyperframes transcribe assets/narration.wav
-
-# 5. Validate + Render
-npm run check   # verify timeline integrity
-npm run render  # output: final_video.mp4
-```
+**Step 4 — Generate your first video**
+Tell your AI:
+> "Help me make an analytical video about [your topic]."
+The AI will handle the rest of the 5-stage pipeline!
 
 ### 🏗️ Project Structure
 
 ```
-fableforge/
-├── template/
-│   ├── index.html          ← HyperFrames timeline template
-│   ├── style.css           ← Video composition styles
-│   ├── script-template.md  ← English storyboard template
-│   └── 视频脚本.md          ← Chinese storyboard template
-│
-├── YYYYMMDD/               ← Per-episode archive
-│   ├── index.html
-│   ├── assets/
-│   │   ├── scene1.png … scene{N}.png
-│   │   ├── narration.wav
-│   │   └── transcript.json
-│   └── final_video.mp4
-│
-├── voice-model/
-│   ├── generate.py.example ← Voice generation script template
-│   └── README.md           ← Recording guide
-│
+your-workspace/
 ├── .agents/skills/fableforge/
-│   ├── SKILL.md            ← AI Agent SOP (Chinese)
-│   └── SKILL.en.md         ← AI Agent SOP (English)
-│
-└── package.json
+│   ├── SKILL.md            ← AI Agent SOP (Core instructions)
+│   └── resources/          ← Templates & Voice models used by AI for init
+├── template/               ← Auto-copied by AI during init
+├── voice-model/            ← Auto-copied by AI during init
+├── bin/                    ← FFmpeg (Auto-downloaded by AI)
+└── YYYYMMDD/               ← Per-episode archive (Auto-generated by AI)
 ```
 
 ### 🧠 Core SOP: 5-Stage Industrial Pipeline
@@ -151,10 +82,18 @@ The heart of FableForge is a **command-level executable SOP** for AI Agents, sto
 | Stage | What Happens | Exit Criteria |
 |-------|-------------|---------------|
 | **Stage 1** Concept & Asset Generation | Write allegory, generate images, synthesize voice | Image count == scene count, audio file ready |
-| **Stage 1.5** BGM Matching | Mood analysis, track selection, auto-integration | BGM file ready, attribution added |
+| **Stage 1.6** Typography Poster | Generate click-optimized pure-text cover and CTA end card | Cover & End card ready |
+| **Stage 1.7** BGM Matching | Mood analysis, track selection, auto-integration | BGM file ready, attribution added |
 | **Stage 2** Data-Driven Timeline | Whisper transcription, frame-accurate scene alignment | Deviation < 0.2s, zero estimated values |
 | **Stage 3** Static Layout Validation | Pure HTML/CSS, verify no image cropping before animation | All images display fully, DOM injected dynamically |
 | **Stage 4** Pre-flight & Render | inspect → render, machine validation replaces eyeballing | inspect exits 0, duration matches audio exactly |
+
+### 🎨 Typography Poster Generator
+
+FableForge automatically generates high-impact, pure-text cover posters (`scene_cover.png`) and Call-To-Action end cards (`scene_end.png`) for your videos. 
+- **10 Built-in Styles**: From "Modern Tech Blue" to "Minimalist Black & White".
+- **No Images Rule**: Typography-only designs for maximum click-through rates.
+- **Auto-personalized**: The AI will ask for your preferred signature/IP name before generating.
 
 ### 🎵 Automated BGM Integration
 
@@ -208,9 +147,9 @@ PRs welcome for:
 <a name="中文"></a>
 ## 🇨🇳 中文
 
-FableForge 是一个全自动视频生产管线，能将管理学概念转化为精致的短视频——包含**克隆你的声音**进行的旁白、AI 生成的视觉画面、精确到帧的字幕，以及电影级的 Ken Burns 动态效果。
+FableForge 是一个全自动通用视频生产管线，能将任何概念或洞察转化为精致的短视频——包含**克隆你的声音**进行的旁白、AI 生成的视觉画面、精确到帧的字幕，以及电影级的 Ken Burns 动态效果。
 
-> **FableForge** = Fable (寓言) × Forge (铸造): 利用 AI 将深刻的管理洞察铸造成引人入胜的寓言短片。
+> **FableForge** 通用制片厂: 利用 AI 将深刻的洞察铸造成引人入胜的短视频。
 
 ### ✨ 演示作品
 
@@ -226,68 +165,41 @@ FableForge 是一个全自动视频生产管线，能将管理学概念转化为
 
 > 📺 将 `final_video.mp4` 拖入浏览器或播放器即可观看。
 
-### 🚀 快速开始
+### 🚀 快速开始 (AI-First 安装)
 
-> 本项目的核心体验是用**你自己的声音**讲述寓言故事。整个流程分三个阶段，首次使用约需 30 分钟完成配置。
+FableForge 已经被封装为一个 **AI Agent Skill**。你不再需要手动 `git clone` 或敲命令安装依赖。只需将这个 Skill 交给你的 AI 助手（如 Cursor、Cline 或 Gemini），它会自动为你搭建整个制片厂。
 
-#### 阶段一：录制你的声音（首次必做，一劳永逸）
-
-VoxCPM2 是一个**声纹克隆**模型，它需要你提供一段自己的声音样本，之后便能永久模拟你的音色。
-
-**第 1 步：准备录音环境**
-- 安静的房间（避免空调噪音、回声）
-- 有线耳机麦克风（效果优于内置麦克风）
-
-**第 2 步：录制 15 秒声音样本**
-
-朗读以下这段文字：
-> "大家好，我在录制自己的声音样本。这段录音将作为我的声纹模板，帮助 AI 精确还原我的音色和情感。现在是[你的名字]，感谢收听。"
-
-- 导出为 **WAV 格式**，采样率 44100Hz 或以上
-- 保存至 `voice-model/01_samples/my_voice.wav`
-
-#### 阶段二：配置项目环境（首次）
-
+**第 1 步：下载 Skill**
+在一个空的文件夹中运行：
 ```bash
-git clone https://github.com/Lucas-Kay8/fableforge.git
-cd fableforge
-
-# 安装 FFmpeg（视频渲染必须）
-curl -L https://evermeet.cx/ffmpeg/get/zip -o ffmpeg.zip && unzip ffmpeg.zip
-curl -L https://evermeet.cx/ffmpeg/get/ffprobe/zip -o ffprobe.zip && unzip ffprobe.zip
-mkdir -p bin && mv ffmpeg bin/ && mv ffprobe bin/ && chmod +x bin/*
+npx skills add Lucas-Kay8/ai-video-studio
 ```
 
-#### 阶段三：生成你的第一个寓言视频
+**第 2 步：让 AI 初始化环境**
+打开 AI 对话框，发送：
+> "请帮我初始化 FableForge 制片厂。"
 
-```bash
-cp -r template/ $(date +%Y%m%d)/
-cd $(date +%Y%m%d)/
+AI 会自动读取 `SKILL.md`，为你一键释放 `template/` 和 `voice-model/` 脚手架，并自动下载配置 FFmpeg。
 
-# 1. 编写剧本
-open 视频脚本.md
+**第 3 步：录制声音样本**
+初始化完成后，AI 会提示你录制一段 15 秒的声音样本，放在 `voice-model/01_samples/my_voice.wav`。
 
-# 2. 生成配音
-source ../voice-model/venv/bin/activate
-python ../voice-model/generate.py   # 修改 TARGET_TEXT 为你的完整旁白
-cp ../voice-model/02_output/output.wav assets/narration.wav
-
-# 3. 预检 + 渲染
-npm run check
-npm run render
-```
+**第 4 步：生成你的第一个视频**
+对 AI 说：
+> "帮我做一个关于[某个话题]的分析类视频。"
+AI 会自动接管剩下的 5 步工业化流水线！
 
 ### 🏗️ 项目架构
 
 ```
-.
-├── template/               ← 新项目起点
-├── YYYYMMDD/               ← 每期视频归档
+your-workspace/
 ├── .agents/skills/fableforge/
-│   ├── SKILL.md            ← AI Agent 专用 SOP (核心)
-│   └── SKILL.en.md         ← AI Agent 专用 SOP (英文)
-├── voice-model/            ← 语音克隆模型与脚本
-└── package.json
+│   ├── SKILL.md            ← AI Agent 专用 SOP (核心规则)
+│   └── resources/          ← 模板与模型资产 (AI 初始化时释放)
+├── template/               ← AI 自动释放的视频模板
+├── voice-model/            ← AI 自动释放的语音克隆脚手架
+├── bin/                    ← AI 自动下载的 FFmpeg 依赖
+└── YYYYMMDD/               ← 每期视频的项目归档
 ```
 
 ### 🧠 核心 SOP：五段式工业化流水线
@@ -296,11 +208,19 @@ npm run render
 
 | 阶段 | 做什么 | 退出标准 |
 |------|--------|---------|
-| **Stage 1** 概念与资产生成 | 创作寓言、生成图片、合成语音 | 图片数 == 分镜数，音频文件就位 |
-| **Stage 1.5** BGM 自动配乐 | 情绪识别、曲库匹配、自动下载集成 | BGM 就位，署名信息补充 |
+| **Stage 1** 概念与资产生成 | 创作内容、生成分镜素材、合成语音 | 主体视觉与音频文件就位 |
+| **Stage 1.6** 纯文字海报生成 | 自动生成高转化率纯文字封面与封底 | 封面与封底就位 |
+| **Stage 1.7** BGM 自动配乐 | 情绪识别、曲库匹配、自动下载集成 | BGM 就位，署名信息补充 |
 | **Stage 2** 数据驱动时间轴 | Whisper 转录，精确对齐每幕时间 | 误差 < 0.2 秒，无估算值 |
 | **Stage 3** 静态排版验收 | 纯静态 HTML/CSS，验证不裁切 | 所有图片完整显示，DOM 动态注入 |
 | **Stage 4** 预检与渲染 | inspect → render，机器校验 | inspect 0 报错，时长精确匹配 |
+
+### 🎨 纯文字海报风格生成器
+
+FableForge 会为你的每一个视频自动生成**高转化率的封面与封底**：
+- **10 大排版风格矩阵**：涵盖“高级商务风”、“科技蓝”、“黑金战略”等，适配各种内容体裁。
+- **纯文字铁律**：抛弃配图，采用满屏大字错位排版，最大化视觉冲击力。
+- **彻底去个人化**：AI 会在生成前询问你的 IP 署名，为你量身定制专属落款。
 
 ### 🎵 新功能：自动化背景音乐 (BGM)
 
