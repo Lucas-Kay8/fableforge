@@ -1,5 +1,6 @@
 ---
-name: fableforge
+name: ai-video-studio
+version: 1.0.1
 description: FableForge AI Agent SOP — A command-level executable playbook for producing high-quality management allegory videos. Covers the full pipeline from concept generation, story writing, TTS voice synthesis, to HyperFrames video rendering, including visual style guidelines and technical pitfall reference.
 ---
 
