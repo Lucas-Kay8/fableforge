@@ -70,7 +70,7 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 
 ### 3.2B HTML 基础模板 — 模式 B（视频 + 文字叠加）
 
-> ℹ️ 以下为模式 B 的 HTML/CSS 规范。参考实现见 `20260518_org_slowdown/index.html` 和 `style.css`。
+> ℹ️ 以下为模式 B 的 HTML/CSS 规范。仅参考下方模板的 DOM 结构，⛔ 严禁从旧集复制 HTML 文件。
 
 **根容器（竖屏画幅）：**
 ```html
@@ -170,6 +170,52 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 - `.text-layer--bottom`：底部三分之一（大多数叙述场景）
 - `.text-layer--center`：垂直居中（金句升华、数字冲击）
 
+### 3.3B-2 模式 B 的封面与封底 DOM 结构（⛔ 强制）
+
+模式 B 的视频必须包含纯 HTML/CSS 实现的封面标题幕和封底互动幕。不使用 PNG 图片，而是通过大字排版 + GSAP 动效实现。
+
+```html
+<!-- 封面标题幕：必须是第一个场景 -->
+<div id="scene_cover" class="clip"
+     data-start="0" data-duration="{6~8秒}" data-track-index="1"
+     style="z-index: 1;">
+  <div class="scene-content">
+    <div class="text-layer text-layer--center">
+      <div id="cover-sub" class="caption-text">{副标题}</div>
+      <div id="cover-title" class="headline">{主标题}</div>
+      <div id="cover-author" class="caption-text">—— {署名}</div>
+    </div>
+  </div>
+</div>
+
+<!-- 封底互动幕：必须是最后一个场景 -->
+<div id="scene_end" class="clip"
+     data-start="{最后一幕结束时间}" data-duration="{8~10秒}" data-track-index="1"
+     style="z-index: 99;">
+  <div class="scene-content">
+    <div class="text-layer text-layer--center">
+      <div id="end-line1" class="headline">👍 点赞 ⭐ 收藏</div>
+      <div id="end-line2" class="headline">🔔 加关注</div>
+      <div id="end-cta" class="caption-text">我们下期见！—— {署名}</div>
+    </div>
+  </div>
+</div>
+```
+
+### 3.3B-3 模式 B 的逐字同步字幕（⛔ 强制）
+
+模式 B 的视频**必须**在底部包含与配音同步的逐字滚动字幕。实现步骤：
+
+1. **运行 Whisper 转录**（Stage 2）获取 `transcript.json` 或在 Stage 2 中手动构建断句数据。
+2. **在 `index.html` 中创建字幕轨道容器**：
+   ```html
+   <div id="subtitles-track"
+        style="position:absolute; bottom:120px; left:0; right:0; height:140px; z-index:100;">
+   </div>
+   ```
+3. **在 GSAP 脚本中创建字幕控制器**：解析 `transcript.json` 或内联 `CAPTIONS_DATA` 数组，逐字创建 `<span class="caption-word">` 元素并绑定 GSAP 动画（高亮 color/scale 变化）。严禁使用 `className` 动画绑定，必须直接对 CSS 属性进行补间插值。
+4. **物理防遮挡**：字幕轨道必须与画面大字在纵向上完全隔离。大字使用 `padding-bottom >= 300px` 限制最大高度，字幕使用 `bottom: 120px` 固定在底部，确保两者之间有 ≥ 80px 的空白隔离带。
+
 ### 3.4 静态验收（加入动画前的检查）
 
 用浏览器打开 `index.html`，截图确认：
@@ -182,9 +228,15 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 - [ ] 视频背景可见（非黑屏），文字叠加清晰可读
 - [ ] `dim-overlay` 暗化效果适当（文字不被视频干扰）
 - [ ] 全屏文字卡（如「A ≠ B」）显示正确
+- [ ] ⛔ 封面标题幕 `#scene_cover` 存在且内容正确
+- [ ] ⛔ 封底互动幕 `#scene_end` 存在且内容正确
+- [ ] ⛔ 字幕轨道 `#subtitles-track` 存在且位于底部，与大字无纵向重叠
 
 **✅ Stage 3 退出标准：**
 - [ ] 纯静态下所有视觉素材（图片或视频）100% 正确显示
 - [ ] `data-composition-id`、`data-width`、`data-height` 已正确设置
 - [ ] 模式 A：字幕通过 `textContent` 注入；模式 B：文字叠加 DOM 结构完整
+- [ ] ⛔ 封面标题幕 `#scene_cover` 已就位（验证：`grep 'scene_cover' index.html` 返回结果）
+- [ ] ⛔ 封底互动幕 `#scene_end` 已就位（验证：`grep 'scene_end' index.html` 返回结果）
+- [ ] ⛔ 逐字字幕轨道 `#subtitles-track` 已就位（验证：`grep 'subtitles-track' index.html` 返回结果）
 - [ ] `npx hyperframes lint .` 报 **0 error(s)**

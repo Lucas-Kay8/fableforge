@@ -35,6 +35,21 @@ npx hyperframes@latest inspect YYYYMMDD/
 - [ ] 控制台输出的 `totalDuration` 与 Stage 2.1 测量的音频时长误差 < 0.2 秒
 - [ ] 无任何 `StaticGuard` 警告
 
+### 4.2.1 渲染前集成检查清单（⛔ 全部通过方可执行 render）
+
+在执行 `npx hyperframes render` 之前，必须逐一确认以下事项。**任意一项未通过，严禁渲染。**
+
+| # | 检查项 | 验证方法 |
+|---|--------|---------|
+| 1 | 封面标题幕存在 | `grep 'scene_cover' index.html` 返回结果 |
+| 2 | 封底互动幕存在 | `grep 'scene_end' index.html` 返回结果 |
+| 3 | 逐字同步字幕存在 | `grep 'subtitles-track' index.html` 且 `grep 'caption-word\|CAPTIONS_DATA' index.html` 返回结果 |
+| 4 | 配音音频就位 | `ffprobe assets/narration.wav` 成功且时长 > 0 |
+| 5 | BGM 就位且为新文件 | `ffprobe assets/bgm.mp3` 成功，且 `视频脚本.md` 中有本集 BGM 署名（含曲名和来源） |
+| 6 | 所有视频素材就位 | `ls assets/scene*.mp4 \| wc -l` == 剧本分镜数，且每个文件通过 `ffprobe` 校验 |
+| 7 | 素材为本集新下载 | `download_and_process.py` 中 URL 不与任何旧集重复 |
+| 8 | lint 零错误 | `npx hyperframes lint` 报 0 error(s) |
+
 ### 4.3 渲染导出
 
 ```bash

@@ -149,7 +149,7 @@ cp /Users/lucas/Work/09.Antigravity/语音模型/generate_cantillon.py \
 
 **步骤 3 — 编写自动化下载脚本 `download_and_process.py`：**
 
-脚本必须包含以下能力（参考实现见 `20260518_org_slowdown/download_and_process.py`）：
+脚本必须包含以下能力（仅参考下方代码模板的结构，⛔ 严禁复制旧集的 URL 或文件路径，每集的 URL 必须根据本集剧本主题全新搜索获取）：
 
 ```python
 VIDEO_MAP = {
@@ -171,7 +171,7 @@ VIDEO_MAP = {
 | 9:16 竖屏 | `scale=1080:1920` | 直接缩放 |
 | 16:9 横屏 | `crop=ih*9/16:ih,scale=1080:1920` | 居中裁剪后缩放 |
 
-所有视频统一参数：`-t 20 -c:v libx264 -crf 18 -an -y`（限时长 20s，去音轨）
+所有视频统一参数：`-stream_loop 2 -t 30 -c:v libx264 -crf 18 -an -y`（循环拼接后限时长 30s，去音轨。确保素材时长覆盖该幕的完整 `data-duration`，避免播完后黑屏）
 
 **步骤 4 — 运行脚本：**
 ```bash
@@ -211,11 +211,14 @@ python3 download_and_process.py
 
 模式 B：
 - [ ] `assets/` 下每幕对应的 `.mp4` 文件已就位且通过 `ffprobe` 校验
-- [ ] 所有视频为 1080×1920 竖屏、无音轨、时长 ≤ 20s
+- [ ] 所有视频为 1080×1920 竖屏、无音轨、时长 ≤ 30s
+- [ ] ⛔ **新鲜度校验**：`download_and_process.py` 中的所有 URL 必须是根据本集剧本主题全新搜索获取的。验证方法：对比 `VIDEO_MAP` 中的 URL 与历史集的 `download_and_process.py`，不得有任何重复 URL。
 
 通用（模式 A 与 B 都必须满足）：
-- [ ] `scene_cover.png` 与 `scene_end.png` 已生成并就位。
-- [ ] `assets/narration.wav` 已生成。
+- [ ] `assets/narration.wav` 已生成且通过 `ffprobe` 校验。
+- [ ] 封面/封底已就位：
+  - 模式 A：`scene_cover.png` 与 `scene_end.png` 已生成。
+  - 模式 B：`index.html` 中包含 `#scene_cover` 和 `#scene_end` 的 DOM 结构（参见 Stage 3 §3.2B 模板），且 GSAP 动画已绑定。
 
 ### 1.7 BGM 背景音乐匹配
 
@@ -233,5 +236,6 @@ BGM 是情绪的推手，必须在 Stage 2 之前完成匹配。
    ```
 
 **✅ Stage 1.7 退出标准：**
-- [ ] `assets/bgm.mp3` 已就位。
-- [ ] `视频脚本.md` 已补充 BGM 署名信息（含作者、链接及 CC 协议）。
+- [ ] `assets/bgm.mp3` 已就位且通过 `ffprobe` 校验。
+- [ ] ⛔ **BGM 新鲜度校验**：BGM 文件必须是根据本集剧本情绪主题全新搜索并下载的，严禁复用旧集 `bgm.mp3`。
+- [ ] `视频脚本.md` 已补充本集 BGM 署名信息（含作者、曲名、来源链接及 CC 协议）。

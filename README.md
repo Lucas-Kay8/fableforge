@@ -30,7 +30,7 @@ FableForge is a fully automated video production pipeline that turns any concept
 |-------|--------------------|----------|------|
 | *The Scale That Gains Weight* | Cantillon Effect & wealth redistribution | 133s | [Watch on YouTube](https://youtu.be/mSHp5E3-PDs) |
 | *The Lighthouse of Fogport* | Time Inconsistency & The cost of broken promises | 82s | [Watch on YouTube](https://youtu.be/cAJq7VN0hs0) |
-| *High-Risk High-Performers* | AI-driven organizational analysis & KPI traps | 100s | [Local MP4](file:///Users/lucas/Work/09.Antigravity/视频生成/episodes/20260520_high_risk_team/renders/20260520_high_risk_team_2026-05-20_15-59-24.mp4) |
+| *High-Risk High-Performers* | AI-driven organizational analysis & KPI traps | 100s | [Local MP4](file:///Users/lucas/Work/09.Antigravity/视频生成/episodes/20260520_high_risk_team/renders/20260520_high_risk_team_2026-05-20_18-50-33.mp4) |
 
 > 📺 The above works are fully generated and rendered using this FableForge SOP with cloned personal voices.
 
@@ -177,7 +177,7 @@ FableForge 是一个全自动通用视频生产管线，能将任何概念或洞
 |-------|--------------------|----------|------|
 | 《会自己变重的秤》 | 坎蒂隆效应与财富再分配 | 133s | [在 YouTube 观看](https://youtu.be/mSHp5E3-PDs) |
 | 《雾港城的灯塔》 | 时间不一致性与承诺的代价 | 82s | [在 YouTube 观看](https://youtu.be/cAJq7VN0hs0) |
-| 《高绩效的“高风险”团队》 | AI 参与组织判断的真实过程与 KPI 陷阱 | 100s | [本地渲染 MP4](file:///Users/lucas/Work/09.Antigravity/视频生成/episodes/20260520_high_risk_team/renders/20260520_high_risk_team_2026-05-20_15-59-24.mp4) |
+| 《高绩效的“高风险”团队》 | AI 参与组织判断的真实过程与 KPI 陷阱 | 100s | [本地渲染 MP4](file:///Users/lucas/Work/09.Antigravity/视频生成/episodes/20260520_high_risk_team/renders/20260520_high_risk_team_2026-05-20_18-50-33.mp4) |
 
 > 📺 以上代表作品均完全基于本 FableForge 工业化流水线 SOP 生成，并使用了克隆的个人声纹进行配音渲染。
 
