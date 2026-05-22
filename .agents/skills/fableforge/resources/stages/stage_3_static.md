@@ -170,6 +170,13 @@ window.__timelines["composition"] = tl; // key 必须与 data-composition-id 一
 - `.text-layer--bottom`：底部三分之一（大多数叙述场景）
 - `.text-layer--center`：垂直居中（金句升华、数字冲击）
 
+> [!IMPORTANT]
+> **排版抗拉伸与防溢出折行红线（防长字拉伸与横向溢出）：**
+> 为了通过 `npx hyperframes inspect` 的像素级防溢出排版审计，所有大字报文本元素（`.headline`, `.body-text`, `.caption-text`）在 CSS 编写中必须**无条件遵循抗拉伸规程**：
+> 1. **强制折行属性**：必须声明 `word-wrap: break-word`、`word-break: break-all` 以及 `white-space: normal`。这保证了无论在何种分辨率和极限字符下，文字长句都会自适应安全换行，绝不向两侧拉伸溢出。
+> 2. **最大宽度限制**：配置 `max-width: 100%` 或 `max-width: 90%`（为两侧保留边缘美学边距），防止容器发生无意识拉伸变形。
+
+
 ### 3.3B-2 模式 B 的封面与封底 DOM 结构（⛔ 强制）
 
 模式 B 的视频必须包含纯 HTML/CSS 实现的封面标题幕和封底互动幕。不使用 PNG 图片，而是通过大字排版 + GSAP 动效实现。

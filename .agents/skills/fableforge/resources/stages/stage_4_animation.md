@@ -23,6 +23,22 @@
 | 3（高潮爆发） | 硬切 + 微缩放 | `tl.set(next, {opacity:1}); fromTo(next, {scale:1.05}, {scale:1.0, duration:0.3})` | 冲击感 |
 | 4（沉默留白） | 淡入黑 → 淡出黑 | `先 to(prev, {opacity:0, duration:0.8}), 延迟 0.5s, 再 fromTo(next, {opacity:0}, {opacity:1, duration:1.0})` | 呼吸感，给观众消化时间 |
 
+### 4.1.2 场景生命周期显隐控制与变量自适应绑定（重大动效架构红线）
+
+为了彻底杜绝多个大场景在时序切换时的 DOM 重合堆叠冲突，必须在 GSAP 动画设计中无条件执行生命周期隐藏控制：
+1. **隐藏状态机规范**：
+   在 `style.css` 中将所有非活动分镜的内部容器（如 `.scene-content`）默认设为 `opacity: 0; visibility: hidden;`。
+2. **GSAP 显隐切换控制**：
+   在 GSAP timeline 编写中，必须在每个分镜场景切入的瞬间通过 `tl.set` 激活，并在退出的瞬间隐藏：
+   ```javascript
+   // 当场景 scene1 激活时开启可见，退出或到下一场景 scene2 时隐藏，防止 DOM 悬空堆叠
+   tl.set("#scene1-content", { visibility: "visible" }, SCENE_START.scene1);
+   tl.set("#scene1-content", { visibility: "hidden" }, SCENE_START.scene2);
+   ```
+3. **变量化解耦绑定**：
+   禁止在 GSAP timeline 的动效注册中使用任何绝对硬编码的时间戳数值（如 `12.0`）。必须在 JS 头部声明自适应时间变量 `const SCENE_START` 并将所有动效与其绑定偏移（例如 `SCENE_START.scene1 + 2.78`），确保音频时间轴微调时动效自动、平滑地整体平移。
+
+
 ### 4.2 强制预检（渲染前的最后防线）
 
 ```bash
